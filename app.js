@@ -2,6 +2,7 @@
 // CampusFix AI - Application Logic
 // ==========================================
 
+const STORAGE_KEY = "campusFixComplaints";
 
 // ------------------------------------------
 // Default Sample Complaints
@@ -18,7 +19,13 @@ const defaultComplaints = [
     status: "Pending",
     priority: "High",
     authority: "Hostel Warden",
-    createdAt: "2026-08-29"
+    createdAt: "2026-08-29",
+    history: [
+      {
+        status: "Submitted",
+        note: "Complaint submitted successfully."
+      }
+    ]
   },
   {
     id: "CF-2026-002",
@@ -30,7 +37,17 @@ const defaultComplaints = [
     status: "In Progress",
     priority: "Medium",
     authority: "College Safety Department",
-    createdAt: "2026-08-26"
+    createdAt: "2026-08-26",
+    history: [
+      {
+        status: "Submitted",
+        note: "Complaint submitted successfully."
+      },
+      {
+        status: "In Progress",
+        note: "Authority started working on the issue."
+      }
+    ]
   },
   {
     id: "CF-2026-003",
@@ -42,7 +59,17 @@ const defaultComplaints = [
     status: "Resolved",
     priority: "Low",
     authority: "College Safety Department",
-    createdAt: "2026-08-20"
+    createdAt: "2026-08-20",
+    history: [
+      {
+        status: "Submitted",
+        note: "Complaint submitted successfully."
+      },
+      {
+        status: "Resolved",
+        note: "The electrical issue was resolved."
+      }
+    ]
   },
   {
     id: "CF-2026-004",
@@ -54,63 +81,70 @@ const defaultComplaints = [
     status: "Escalated",
     priority: "High",
     authority: "College Main Authority",
-    createdAt: "2026-08-18"
+    createdAt: "2026-08-18",
+    history: [
+      {
+        status: "Submitted",
+        note: "Complaint submitted successfully."
+      },
+      {
+        status: "Escalated",
+        note: "Resolution deadline passed and complaint was escalated."
+      }
+    ]
   }
 ];
 
-
 // ------------------------------------------
-// Load Complaints from Local Storage
+// Load Complaints
 // ------------------------------------------
 
-let complaints;
+function loadComplaints() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
 
-try {
+    if (saved) {
+      const data = JSON.parse(saved);
 
-  const savedComplaints =
-    localStorage.getItem("campusFixComplaints");
+      // Add history to older saved complaints
+      return data.map(complaint => {
+        if (!Array.isArray(complaint.history)) {
+          complaint.history = [
+            {
+              status: "Submitted",
+              note: "Complaint submitted successfully."
+            }
+          ];
+        }
 
-  if (savedComplaints) {
-
-    complaints =
-      JSON.parse(savedComplaints);
-
-  } else {
-
-    complaints =
-      [...defaultComplaints];
-
-    saveComplaints();
+        return complaint;
+      });
+    }
+  } catch (error) {
+    console.error("Unable to load complaints:", error);
   }
 
-} catch (error) {
-
-  complaints =
-    [...defaultComplaints];
-
-  saveComplaints();
+  return [...defaultComplaints];
 }
 
+let complaints = loadComplaints();
 
 // ------------------------------------------
 // Save Complaints
 // ------------------------------------------
 
 function saveComplaints() {
-
   localStorage.setItem(
-    "campusFixComplaints",
+    STORAGE_KEY,
     JSON.stringify(complaints)
   );
 }
-
 
 // ------------------------------------------
 // Show Report Form
 // ------------------------------------------
 
 function showReportForm() {
-
   const reportSection =
     document.getElementById("reportSection");
 
@@ -122,10 +156,7 @@ function showReportForm() {
   }
 
   if (reportSection) {
-
-    reportSection.classList.remove(
-      "hidden"
-    );
+    reportSection.classList.remove("hidden");
 
     reportSection.scrollIntoView({
       behavior: "smooth"
@@ -133,110 +164,65 @@ function showReportForm() {
   }
 }
 
-
 // ------------------------------------------
 // Show Dashboard
 // ------------------------------------------
 
 function showDashboard() {
-
   const dashboard =
     document.getElementById("dashboard");
 
   if (dashboard) {
-
     dashboard.scrollIntoView({
       behavior: "smooth"
     });
   }
 }
 
-
 // ------------------------------------------
-// Generate Complaint ID
+// Complaint Utilities
 // ------------------------------------------
 
 function generateComplaintId() {
-
-  const randomNumber =
-    Math.floor(
-      1000 + Math.random() * 9000
-    );
-
-  return "CF-2026-" + randomNumber;
+  return "CF-2026-" + Date.now();
 }
 
-
-// ------------------------------------------
-// Determine Authority
-// ------------------------------------------
-
 function getAuthority(type) {
-
   if (type === "Hostel") {
-
     return "Hostel Warden";
   }
 
   return "College Safety Department";
 }
 
-
-// ------------------------------------------
-// Calculate Priority
-// ------------------------------------------
-
-function calculatePriority(
-  category,
-  description
-) {
-
+function calculatePriority(category, description) {
   const text =
-    (
-      category +
-      " " +
-      description
-    ).toLowerCase();
-
+    (category + " " + description)
+      .toLowerCase();
 
   if (
-
     text.includes("security") ||
     text.includes("danger") ||
     text.includes("fire") ||
     text.includes("water")
-
   ) {
-
     return "High";
   }
 
-
   if (
-
     text.includes("electrical") ||
     text.includes("wifi") ||
     text.includes("wi-fi") ||
     text.includes("internet")
-
   ) {
-
     return "Medium";
   }
-
 
   return "Low";
 }
 
-
-// ------------------------------------------
-// Get Status CSS Class
-// ------------------------------------------
-
 function getStatusClass(status) {
-
   if (status === "In Progress") {
-
     return "progress";
   }
 
@@ -245,16 +231,12 @@ function getStatusClass(status) {
     .replace(/\s+/g, "-");
 }
 
-
 // ------------------------------------------
-// Render Dashboard Statistics
+// Dashboard Statistics
 // ------------------------------------------
 
 function renderStats() {
-
-  const total =
-    complaints.length;
-
+  const total = complaints.length;
 
   const pending =
     complaints.filter(
@@ -262,135 +244,77 @@ function renderStats() {
         complaint.status === "Pending"
     ).length;
 
-
   const inProgress =
     complaints.filter(
       complaint =>
-        complaint.status ===
-        "In Progress"
+        complaint.status === "In Progress"
     ).length;
 
-
-  const overdue =
+  const escalated =
     complaints.filter(
       complaint =>
-        complaint.status ===
-        "Escalated"
+        complaint.status === "Escalated"
     ).length;
 
-
   const totalElement =
-    document.getElementById(
-      "totalIssues"
-    );
+    document.getElementById("totalIssues");
 
   const pendingElement =
-    document.getElementById(
-      "pendingIssues"
-    );
+    document.getElementById("pendingIssues");
 
   const progressElement =
-    document.getElementById(
-      "progressIssues"
-    );
+    document.getElementById("progressIssues");
 
   const overdueElement =
-    document.getElementById(
-      "overdueIssues"
-    );
-
+    document.getElementById("overdueIssues");
 
   if (totalElement) {
-
-    totalElement.textContent =
-      total;
+    totalElement.textContent = total;
   }
-
 
   if (pendingElement) {
-
-    pendingElement.textContent =
-      pending;
+    pendingElement.textContent = pending;
   }
-
 
   if (progressElement) {
-
-    progressElement.textContent =
-      inProgress;
+    progressElement.textContent = inProgress;
   }
-
 
   if (overdueElement) {
-
-    overdueElement.textContent =
-      overdue;
+    overdueElement.textContent = escalated;
   }
 }
-
 
 // ------------------------------------------
 // Render Complaint List
 // ------------------------------------------
 
 function renderComplaints() {
-
   const complaintsList =
-    document.getElementById(
-      "complaintsList"
-    );
-
+    document.getElementById("complaintsList");
 
   if (!complaintsList) {
-
     return;
   }
-
 
   complaintsList.innerHTML = "";
-
-
-  if (complaints.length === 0) {
-
-    complaintsList.innerHTML = `
-      <p>
-        No complaints found.
-      </p>
-    `;
-
-    return;
-  }
-
 
   complaints
     .slice()
     .reverse()
-    .forEach(function (complaint) {
-
-
+    .forEach(complaint => {
       const card =
-        document.createElement(
-          "div"
-        );
-
+        document.createElement("div");
 
       card.className =
         "complaint-card";
 
-
-      card.style.cursor =
-        "pointer";
-
+      card.style.cursor = "pointer";
 
       card.innerHTML = `
+        <h3>${complaint.title}</h3>
 
-        <h3>
-          ${complaint.title}
-        </h3>
-
-        <p>
-          ${complaint.description}
-        </p>
+        <p>${complaint.description}</p>
 
         <div class="complaint-meta">
 
@@ -407,372 +331,384 @@ function renderComplaints() {
           </span>
 
           <span>
-            🔥 ${complaint.priority}
-            Priority
+            🔥 ${complaint.priority} Priority
           </span>
 
-          <span
-            class="status ${getStatusClass(
-              complaint.status
-            )}"
-          >
+          <span class="status ${getStatusClass(
+            complaint.status
+          )}">
             ${complaint.status}
           </span>
 
         </div>
-
       `;
-
 
       card.addEventListener(
         "click",
         function () {
-
           showComplaintDetails(
             complaint.id
           );
-
         }
       );
 
-
-      complaintsList.appendChild(
-        card
-      );
-
+      complaintsList.appendChild(card);
     });
 }
-
 
 // ------------------------------------------
 // Show Complaint Details
 // ------------------------------------------
 
 function showComplaintDetails(id) {
-
   const complaint =
     complaints.find(
       item => item.id === id
     );
 
-
   if (!complaint) {
-
     return;
   }
 
+  if (!Array.isArray(complaint.history)) {
+    complaint.history = [
+      {
+        status: "Submitted",
+        note: "Complaint submitted successfully."
+      }
+    ];
+    saveComplaints();
+  }
 
   const detailsSection =
-    document.getElementById(
-      "detailsSection"
-    );
-
+    document.getElementById("detailsSection");
 
   const complaintDetails =
-    document.getElementById(
-      "complaintDetails"
-    );
-
+    document.getElementById("complaintDetails");
 
   const reportSection =
-    document.getElementById(
-      "reportSection"
-    );
+    document.getElementById("reportSection");
 
-
-  if (!detailsSection ||
-      !complaintDetails) {
-
+  if (!detailsSection || !complaintDetails) {
     return;
   }
 
-
   if (reportSection) {
-
-    reportSection.classList.add(
-      "hidden"
-    );
+    reportSection.classList.add("hidden");
   }
 
+  let historyHTML = "";
+
+  complaint.history.forEach(item => {
+    historyHTML += `
+      <div class="history-item">
+        <strong>${item.status}</strong>
+        <p>${item.note}</p>
+      </div>
+    `;
+  });
 
   complaintDetails.innerHTML = `
-
     <div class="complaint-detail-card">
 
-      <h2>
-        ${complaint.title}
-      </h2>
+      <h2>${complaint.title}</h2>
 
-      <p>
-        ${complaint.description}
-      </p>
+      <p>${complaint.description}</p>
 
       <hr>
 
       <p>
-        <strong>
-          Complaint ID:
-        </strong>
+        <strong>Complaint ID:</strong>
         ${complaint.id}
       </p>
 
       <p>
-        <strong>
-          Type:
-        </strong>
+        <strong>Type:</strong>
         ${complaint.type}
       </p>
 
       <p>
-        <strong>
-          Category:
-        </strong>
+        <strong>Category:</strong>
         ${complaint.category}
       </p>
 
       <p>
-        <strong>
-          Location:
-        </strong>
+        <strong>Location:</strong>
         ${complaint.location}
       </p>
 
       <p>
-        <strong>
-          Priority:
-        </strong>
+        <strong>Priority:</strong>
         ${complaint.priority}
       </p>
 
       <p>
-        <strong>
-          Authority:
-        </strong>
+        <strong>Authority:</strong>
         ${complaint.authority}
       </p>
 
       <p>
-        <strong>
-          Status:
-        </strong>
+        <strong>Status:</strong>
         ${complaint.status}
       </p>
 
       <p>
-        <strong>
-          Submitted:
-        </strong>
+        <strong>Submitted:</strong>
         ${complaint.createdAt}
       </p>
 
-    </div>
+      <hr>
 
+      <h3>Authority Actions</h3>
+
+      <textarea
+        id="actionNote"
+        placeholder="Add an action/update note..."
+      ></textarea>
+
+      <div class="action-buttons">
+
+        <button
+          type="button"
+          onclick="updateComplaintStatus(
+            '${complaint.id}',
+            'In Progress'
+          )"
+        >
+          Mark In Progress
+        </button>
+
+        <button
+          type="button"
+          onclick="updateComplaintStatus(
+            '${complaint.id}',
+            'Resolved'
+          )"
+        >
+          Mark Resolved
+        </button>
+
+      </div>
+
+      <hr>
+
+      <h3>Complaint Journey</h3>
+
+      <div class="complaint-history">
+        ${historyHTML}
+      </div>
+
+    </div>
   `;
 
-
-  detailsSection.classList.remove(
-    "hidden"
-  );
-
+  detailsSection.classList.remove("hidden");
 
   detailsSection.scrollIntoView({
     behavior: "smooth"
   });
 }
 
+// ------------------------------------------
+// Update Complaint Status
+// ------------------------------------------
+
+function updateComplaintStatus(
+  complaintId,
+  newStatus
+) {
+  const complaint =
+    complaints.find(
+      item =>
+        item.id === complaintId
+    );
+
+  if (!complaint) {
+    return;
+  }
+
+  const actionNoteElement =
+    document.getElementById("actionNote");
+
+  let note = "";
+
+  if (
+    actionNoteElement &&
+    actionNoteElement.value.trim()
+  ) {
+    note =
+      actionNoteElement.value.trim();
+  }
+
+  if (!note) {
+    if (newStatus === "In Progress") {
+      note =
+        "Authority started working on this complaint.";
+    } else if (newStatus === "Resolved") {
+      note =
+        "Authority marked this complaint as resolved.";
+    } else {
+      note =
+        "Complaint status updated.";
+    }
+  }
+
+  complaint.status = newStatus;
+
+  complaint.history.push({
+    status: newStatus,
+    note: note
+  });
+
+  saveComplaints();
+
+  renderStats();
+
+  renderComplaints();
+
+  showComplaintDetails(complaintId);
+
+  alert(
+    "Complaint status updated to: " +
+    newStatus
+  );
+}
 
 // ------------------------------------------
 // Close Complaint Details
 // ------------------------------------------
 
 function closeDetails() {
-
   const detailsSection =
-    document.getElementById(
-      "detailsSection"
-    );
-
+    document.getElementById("detailsSection");
 
   if (detailsSection) {
-
-    detailsSection.classList.add(
-      "hidden"
-    );
+    detailsSection.classList.add("hidden");
   }
-
 
   const complaintsSection =
     document.getElementById(
       "complaintsSection"
     );
 
-
   if (complaintsSection) {
-
     complaintsSection.scrollIntoView({
       behavior: "smooth"
     });
   }
 }
 
-
 // ------------------------------------------
-// Handle New Complaint Form
+// Handle New Complaint
 // ------------------------------------------
 
 const complaintForm =
-  document.getElementById(
-    "complaintForm"
-  );
-
+  document.getElementById("complaintForm");
 
 if (complaintForm) {
-
-
   complaintForm.addEventListener(
     "submit",
     function (event) {
-
-
       event.preventDefault();
-
 
       const type =
         document.getElementById(
           "complaintType"
         ).value;
 
-
       const category =
         document.getElementById(
           "category"
         ).value;
-
 
       const title =
         document.getElementById(
           "title"
         ).value;
 
-
       const location =
         document.getElementById(
           "location"
         ).value;
-
 
       const description =
         document.getElementById(
           "description"
         ).value;
 
-
       const newComplaint = {
-
-        id:
-          generateComplaintId(),
-
-        title:
-          title,
-
-        type:
-          type,
-
-        category:
-          category,
-
-        location:
-          location,
-
-        description:
-          description,
-
-        status:
-          "Pending",
-
+        id: generateComplaintId(),
+        title: title,
+        type: type,
+        category: category,
+        location: location,
+        description: description,
+        status: "Pending",
         priority:
           calculatePriority(
             category,
             description
           ),
-
         authority:
           getAuthority(type),
-
         createdAt:
           new Date()
             .toISOString()
-            .split("T")[0]
-
+            .split("T")[0],
+        history: [
+          {
+            status: "Submitted",
+            note:
+              "Complaint submitted successfully and assigned to " +
+              getAuthority(type) +
+              "."
+          }
+        ]
       };
 
-
-      complaints.push(
-        newComplaint
-      );
-
+      complaints.push(newComplaint);
 
       saveComplaints();
 
-
       renderStats();
-
 
       renderComplaints();
 
-
       complaintForm.reset();
-
 
       alert(
         "Complaint submitted successfully!\n\n" +
-
         "Complaint ID: " +
-
         newComplaint.id +
-
-        "\n\nAssigned to: " +
-
+        "\nAssigned to: " +
         newComplaint.authority
       );
 
-
       const reportSection =
-        document.getElementById(
-          "reportSection"
-        );
-
+        document.getElementById("reportSection");
 
       if (reportSection) {
-
-        reportSection.classList.add(
-          "hidden"
-        );
+        reportSection.classList.add("hidden");
       }
-
 
       const complaintsSection =
         document.getElementById(
           "complaintsSection"
         );
 
-
       if (complaintsSection) {
-
         complaintsSection.scrollIntoView({
           behavior: "smooth"
         });
       }
-
     }
   );
-
 }
-
 
 // ------------------------------------------
 // Initial Application Render
 // ------------------------------------------
+
+saveComplaints();
 
 renderStats();
 
