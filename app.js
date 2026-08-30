@@ -1,4 +1,4 @@
-// CampusFix AI - Application Logic
+   // CampusFix AI - Application Logic
 
 const complaints = [
   {
@@ -11,7 +11,13 @@ const complaints = [
     status: "Pending",
     priority: "High",
     authority: "Hostel Warden",
-    createdAt: "2026-08-29"
+    createdAt: "2026-08-29",
+    history: [
+      {
+        status: "Submitted",
+        note: "Complaint submitted successfully."
+      }
+    ]
   },
   {
     id: "CF-2026-002",
@@ -23,7 +29,17 @@ const complaints = [
     status: "In Progress",
     priority: "Medium",
     authority: "College Safety Department",
-    createdAt: "2026-08-26"
+    createdAt: "2026-08-26",
+    history: [
+      {
+        status: "Submitted",
+        note: "Complaint submitted successfully."
+      },
+      {
+        status: "In Progress",
+        note: "Issue assigned to the responsible department."
+      }
+    ]
   },
   {
     id: "CF-2026-003",
@@ -35,7 +51,17 @@ const complaints = [
     status: "Resolved",
     priority: "Low",
     authority: "College Safety Department",
-    createdAt: "2026-08-20"
+    createdAt: "2026-08-20",
+    history: [
+      {
+        status: "Submitted",
+        note: "Complaint submitted successfully."
+      },
+      {
+        status: "Resolved",
+        note: "The electrical issue was resolved."
+      }
+    ]
   },
   {
     id: "CF-2026-004",
@@ -47,7 +73,17 @@ const complaints = [
     status: "Escalated",
     priority: "High",
     authority: "College Main Authority",
-    createdAt: "2026-08-18"
+    createdAt: "2026-08-18",
+    history: [
+      {
+        status: "Submitted",
+        note: "Complaint submitted successfully."
+      },
+      {
+        status: "Escalated",
+        note: "Resolution deadline passed. Escalated to main authority."
+      }
+    ]
   }
 ];
 
@@ -112,7 +148,6 @@ function calculatePriority(category, description) {
     (category + " " + description)
       .toLowerCase();
 
-
   if (
     text.includes("security") ||
     text.includes("danger") ||
@@ -122,7 +157,6 @@ function calculatePriority(category, description) {
     return "High";
   }
 
-
   if (
     text.includes("electrical") ||
     text.includes("wifi") ||
@@ -131,7 +165,6 @@ function calculatePriority(category, description) {
   ) {
     return "Medium";
   }
-
 
   return "Low";
 
@@ -155,9 +188,7 @@ function getStatusClass(status) {
 
 function renderStats() {
 
-  const total =
-    complaints.length;
-
+  const total = complaints.length;
 
   const pending =
     complaints.filter(
@@ -165,13 +196,11 @@ function renderStats() {
         complaint.status === "Pending"
     ).length;
 
-
   const inProgress =
     complaints.filter(
       complaint =>
         complaint.status === "In Progress"
     ).length;
-
 
   const overdue =
     complaints.filter(
@@ -184,16 +213,13 @@ function renderStats() {
     .getElementById("totalIssues")
     .textContent = total;
 
-
   document
     .getElementById("pendingIssues")
     .textContent = pending;
 
-
   document
     .getElementById("progressIssues")
     .textContent = inProgress;
-
 
   document
     .getElementById("overdueIssues")
@@ -209,34 +235,27 @@ function renderComplaints() {
   const complaintsList =
     document.getElementById("complaintsList");
 
-
   complaintsList.innerHTML = "";
-
 
   complaints
     .slice()
     .reverse()
     .forEach(complaint => {
 
-
       const card =
         document.createElement("div");
-
 
       card.className =
         "complaint-card";
 
 
-      // Make every complaint card clickable
+      card.onclick = function () {
 
-      card.onclick =
-        function () {
+        showComplaintDetails(
+          complaint.id
+        );
 
-          showComplaintDetails(
-            complaint.id
-          );
-
-        };
+      };
 
 
       card.innerHTML = `
@@ -247,43 +266,35 @@ function renderComplaints() {
           ${complaint.description}
         </p>
 
-
         <div class="complaint-meta">
 
           <span>
             📍 ${complaint.location}
           </span>
 
-
           <span>
             🏷️ ${complaint.category}
           </span>
-
 
           <span>
             👤 ${complaint.authority}
           </span>
 
-
           <span>
             🔥 ${complaint.priority} Priority
           </span>
-
 
           <span
             class="status ${getStatusClass(
               complaint.status
             )}"
           >
-
             ${complaint.status}
-
           </span>
 
         </div>
 
       `;
-
 
       complaintsList.appendChild(card);
 
@@ -302,7 +313,6 @@ function showComplaintDetails(complaintId) {
         item.id === complaintId
     );
 
-
   if (!complaint) {
     return;
   }
@@ -312,7 +322,6 @@ function showComplaintDetails(complaintId) {
     document.getElementById(
       "detailsSection"
     );
-
 
   const complaintDetails =
     document.getElementById(
@@ -331,10 +340,32 @@ function showComplaintDetails(complaintId) {
       complaint.createdAt
     );
 
-
   deadlineDate.setDate(
     deadlineDate.getDate() + 7
   );
+
+
+  let historyHTML = "";
+
+  complaint.history.forEach(item => {
+
+    historyHTML += `
+
+      <div class="history-item">
+
+        <strong>
+          ${item.status}
+        </strong>
+
+        <p>
+          ${item.note}
+        </p>
+
+      </div>
+
+    `;
+
+  });
 
 
   complaintDetails.innerHTML = `
@@ -345,7 +376,6 @@ function showComplaintDetails(complaintId) {
         ${complaint.title}
       </h3>
 
-
       <p>
         ${complaint.description}
       </p>
@@ -353,105 +383,99 @@ function showComplaintDetails(complaintId) {
 
       <div class="details-grid">
 
-
         <div class="detail-item">
-
-          <strong>
-            Complaint ID
-          </strong>
-
+          <strong>Complaint ID</strong>
           ${complaint.id}
-
         </div>
 
-
         <div class="detail-item">
-
-          <strong>
-            Status
-          </strong>
-
+          <strong>Status</strong>
           ${complaint.status}
-
         </div>
 
-
         <div class="detail-item">
-
-          <strong>
-            Priority
-          </strong>
-
+          <strong>Priority</strong>
           ${complaint.priority}
-
         </div>
 
-
         <div class="detail-item">
-
-          <strong>
-            Category
-          </strong>
-
+          <strong>Category</strong>
           ${complaint.category}
-
         </div>
 
-
         <div class="detail-item">
-
-          <strong>
-            Location
-          </strong>
-
+          <strong>Location</strong>
           ${complaint.location}
-
         </div>
 
-
         <div class="detail-item">
-
-          <strong>
-            Complaint Type
-          </strong>
-
+          <strong>Complaint Type</strong>
           ${complaint.type}
-
         </div>
 
-
         <div class="detail-item">
-
-          <strong>
-            Assigned Authority
-          </strong>
-
+          <strong>Assigned Authority</strong>
           ${complaint.authority}
-
         </div>
 
-
         <div class="detail-item">
-
-          <strong>
-            Submitted On
-          </strong>
-
+          <strong>Submitted On</strong>
           ${submissionDate}
-
         </div>
-
 
         <div class="detail-item">
-
-          <strong>
-            Resolution Deadline
-          </strong>
-
+          <strong>Resolution Deadline</strong>
           ${deadlineDate.toLocaleDateString()}
+        </div>
+
+      </div>
+
+
+      <div class="authority-actions">
+
+        <h3>
+          Authority Actions
+        </h3>
+
+        <textarea
+          id="actionNote"
+          placeholder="Add an action or update note..."
+        ></textarea>
+
+
+        <div class="action-buttons">
+
+          <button
+            onclick="updateComplaintStatus(
+              '${complaint.id}',
+              'In Progress'
+            )"
+          >
+            Mark In Progress
+          </button>
+
+
+          <button
+            onclick="updateComplaintStatus(
+              '${complaint.id}',
+              'Resolved'
+            )"
+          >
+            Mark Resolved
+          </button>
 
         </div>
 
+      </div>
+
+
+      <div class="complaint-history">
+
+        <h3>
+          Complaint Journey
+        </h3>
+
+        ${historyHTML}
 
       </div>
 
@@ -473,18 +497,103 @@ function showComplaintDetails(complaintId) {
 }
 
 
+// Update Complaint Status
+
+function updateComplaintStatus(
+  complaintId,
+  newStatus
+) {
+
+  const complaint =
+    complaints.find(
+      item =>
+        item.id === complaintId
+    );
+
+
+  if (!complaint) {
+    return;
+  }
+
+
+  const actionNote =
+    document.getElementById(
+      "actionNote"
+    ).value.trim();
+
+
+  complaint.status =
+    newStatus;
+
+
+  let note =
+    actionNote;
+
+
+  if (!note) {
+
+    if (
+      newStatus ===
+      "In Progress"
+    ) {
+
+      note =
+        "Authority started working on this complaint.";
+
+    }
+
+    if (
+      newStatus ===
+      "Resolved"
+    ) {
+
+      note =
+        "Authority marked this complaint as resolved.";
+
+    }
+
+  }
+
+
+  complaint.history.push({
+
+    status:
+      newStatus,
+
+    note:
+      note
+
+  });
+
+
+  renderStats();
+
+  renderComplaints();
+
+
+  showComplaintDetails(
+    complaintId
+  );
+
+}
+
+
 // Close Complaint Details
 
 function closeDetails() {
 
   document
-    .getElementById("detailsSection")
+    .getElementById(
+      "detailsSection"
+    )
     .classList
     .add("hidden");
 
 
   document
-    .getElementById("complaintsSection")
+    .getElementById(
+      "complaintsSection"
+    )
     .scrollIntoView({
       behavior: "smooth"
     });
@@ -499,7 +608,6 @@ document
   .addEventListener(
     "submit",
     function (event) {
-
 
       event.preventDefault();
 
@@ -569,30 +677,30 @@ document
         createdAt:
           new Date()
             .toISOString()
-            .split("T")[0]
+            .split("T")[0],
+
+        history: [
+          {
+            status:
+              "Submitted",
+
+            note:
+              "Complaint submitted successfully."
+          }
+        ]
 
       };
 
-
-      // Add complaint to list
 
       complaints.push(
         newComplaint
       );
 
 
-      // Update dashboard
-
       renderStats();
-
-
-      // Re-render complaint cards
-      // New complaint will also be clickable
 
       renderComplaints();
 
-
-      // Reset form
 
       document
         .getElementById(
@@ -610,8 +718,6 @@ document
       );
 
 
-      // Go to complaint list
-
       document
         .getElementById(
           "complaintsSection"
@@ -628,4 +734,4 @@ document
 
 renderStats();
 
-renderComplaints();
+renderComplaints();       
