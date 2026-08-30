@@ -1,4 +1,4 @@
-   // CampusFix AI - Application Logic
+// CampusFix AI - Application Logic
 
 const complaints = [
   {
@@ -81,14 +81,16 @@ const complaints = [
       },
       {
         status: "Escalated",
-        note: "Resolution deadline passed. Escalated to main authority."
+        note: "Resolution deadline passed. Escalated to College Main Authority."
       }
     ]
   }
 ];
 
 
-// Show Report Form
+// -----------------------------
+// UI NAVIGATION
+// -----------------------------
 
 function showReportForm() {
 
@@ -104,8 +106,6 @@ function showReportForm() {
 }
 
 
-// Show Dashboard
-
 function showDashboard() {
 
   document
@@ -117,7 +117,9 @@ function showDashboard() {
 }
 
 
-// Generate Complaint ID
+// -----------------------------
+// COMPLAINT UTILITIES
+// -----------------------------
 
 function generateComplaintId() {
 
@@ -126,8 +128,6 @@ function generateComplaintId() {
 
 }
 
-
-// Determine Authority
 
 function getAuthority(type) {
 
@@ -140,13 +140,12 @@ function getAuthority(type) {
 }
 
 
-// Determine Priority
-
 function calculatePriority(category, description) {
 
   const text =
     (category + " " + description)
       .toLowerCase();
+
 
   if (
     text.includes("security") ||
@@ -157,6 +156,7 @@ function calculatePriority(category, description) {
     return "High";
   }
 
+
   if (
     text.includes("electrical") ||
     text.includes("wifi") ||
@@ -166,12 +166,11 @@ function calculatePriority(category, description) {
     return "Medium";
   }
 
+
   return "Low";
 
 }
 
-
-// Get Status CSS Class
 
 function getStatusClass(status) {
 
@@ -184,11 +183,91 @@ function getStatusClass(status) {
 }
 
 
-// Render Dashboard Statistics
+// -----------------------------
+// 7-DAY AUTOMATIC ESCALATION
+// -----------------------------
+
+function checkEscalations() {
+
+  const today = new Date();
+
+
+  complaints.forEach(complaint => {
+
+    // Resolved complaints never escalate
+
+    if (
+      complaint.status === "Resolved" ||
+      complaint.status === "Escalated"
+    ) {
+      return;
+    }
+
+
+    const createdDate =
+      new Date(complaint.createdAt);
+
+
+    const deadlineDate =
+      new Date(complaint.createdAt);
+
+
+    deadlineDate.setDate(
+      deadlineDate.getDate() + 7
+    );
+
+
+    // Escalate when deadline has passed
+
+    if (today > deadlineDate) {
+
+      complaint.status =
+        "Escalated";
+
+
+      complaint.authority =
+        "College Main Authority";
+
+
+      // Prevent duplicate escalation history
+
+      const alreadyEscalated =
+        complaint.history.some(
+          item =>
+            item.status === "Escalated"
+        );
+
+
+      if (!alreadyEscalated) {
+
+        complaint.history.push({
+
+          status:
+            "Escalated",
+
+          note:
+            "7-day resolution deadline passed. Complaint automatically escalated to College Main Authority."
+
+        });
+
+      }
+
+    }
+
+  });
+
+}
+
+
+// -----------------------------
+// DASHBOARD
+// -----------------------------
 
 function renderStats() {
 
-  const total = complaints.length;
+  const total =
+    complaints.length;
+
 
   const pending =
     complaints.filter(
@@ -196,13 +275,15 @@ function renderStats() {
         complaint.status === "Pending"
     ).length;
 
+
   const inProgress =
     complaints.filter(
       complaint =>
         complaint.status === "In Progress"
     ).length;
 
-  const overdue =
+
+  const escalated =
     complaints.filter(
       complaint =>
         complaint.status === "Escalated"
@@ -211,31 +292,44 @@ function renderStats() {
 
   document
     .getElementById("totalIssues")
-    .textContent = total;
+    .textContent =
+    total;
+
 
   document
     .getElementById("pendingIssues")
-    .textContent = pending;
+    .textContent =
+    pending;
+
 
   document
     .getElementById("progressIssues")
-    .textContent = inProgress;
+    .textContent =
+    inProgress;
+
 
   document
     .getElementById("overdueIssues")
-    .textContent = overdue;
+    .textContent =
+    escalated;
 
 }
 
 
-// Render Complaint List
+// -----------------------------
+// COMPLAINT LIST
+// -----------------------------
 
 function renderComplaints() {
 
   const complaintsList =
-    document.getElementById("complaintsList");
+    document.getElementById(
+      "complaintsList"
+    );
+
 
   complaintsList.innerHTML = "";
+
 
   complaints
     .slice()
@@ -245,26 +339,32 @@ function renderComplaints() {
       const card =
         document.createElement("div");
 
+
       card.className =
         "complaint-card";
 
 
-      card.onclick = function () {
+      card.onclick =
+        function () {
 
-        showComplaintDetails(
-          complaint.id
-        );
+          showComplaintDetails(
+            complaint.id
+          );
 
-      };
+        };
 
 
       card.innerHTML = `
 
-        <h3>${complaint.title}</h3>
+        <h3>
+          ${complaint.title}
+        </h3>
+
 
         <p>
           ${complaint.description}
         </p>
+
 
         <div class="complaint-meta">
 
@@ -272,46 +372,60 @@ function renderComplaints() {
             📍 ${complaint.location}
           </span>
 
+
           <span>
             🏷️ ${complaint.category}
           </span>
+
 
           <span>
             👤 ${complaint.authority}
           </span>
 
+
           <span>
             🔥 ${complaint.priority} Priority
           </span>
+
 
           <span
             class="status ${getStatusClass(
               complaint.status
             )}"
           >
+
             ${complaint.status}
+
           </span>
 
         </div>
 
       `;
 
-      complaintsList.appendChild(card);
+
+      complaintsList.appendChild(
+        card
+      );
 
     });
 
 }
 
 
-// Show Complaint Details
+// -----------------------------
+// COMPLAINT DETAILS
+// -----------------------------
 
-function showComplaintDetails(complaintId) {
+function showComplaintDetails(
+  complaintId
+) {
 
   const complaint =
     complaints.find(
       item =>
         item.id === complaintId
     );
+
 
   if (!complaint) {
     return;
@@ -322,6 +436,7 @@ function showComplaintDetails(complaintId) {
     document.getElementById(
       "detailsSection"
     );
+
 
   const complaintDetails =
     document.getElementById(
@@ -340,6 +455,7 @@ function showComplaintDetails(complaintId) {
       complaint.createdAt
     );
 
+
   deadlineDate.setDate(
     deadlineDate.getDate() + 7
   );
@@ -347,25 +463,28 @@ function showComplaintDetails(complaintId) {
 
   let historyHTML = "";
 
-  complaint.history.forEach(item => {
 
-    historyHTML += `
+  complaint.history.forEach(
+    item => {
 
-      <div class="history-item">
+      historyHTML += `
 
-        <strong>
-          ${item.status}
-        </strong>
+        <div class="history-item">
 
-        <p>
-          ${item.note}
-        </p>
+          <strong>
+            ${item.status}
+          </strong>
 
-      </div>
+          <p>
+            ${item.note}
+          </p>
 
-    `;
+        </div>
 
-  });
+      `;
+
+    }
+  );
 
 
   complaintDetails.innerHTML = `
@@ -375,6 +494,7 @@ function showComplaintDetails(complaintId) {
       <h3>
         ${complaint.title}
       </h3>
+
 
       <p>
         ${complaint.description}
@@ -388,40 +508,48 @@ function showComplaintDetails(complaintId) {
           ${complaint.id}
         </div>
 
+
         <div class="detail-item">
           <strong>Status</strong>
           ${complaint.status}
         </div>
+
 
         <div class="detail-item">
           <strong>Priority</strong>
           ${complaint.priority}
         </div>
 
+
         <div class="detail-item">
           <strong>Category</strong>
           ${complaint.category}
         </div>
+
 
         <div class="detail-item">
           <strong>Location</strong>
           ${complaint.location}
         </div>
 
+
         <div class="detail-item">
           <strong>Complaint Type</strong>
           ${complaint.type}
         </div>
+
 
         <div class="detail-item">
           <strong>Assigned Authority</strong>
           ${complaint.authority}
         </div>
 
+
         <div class="detail-item">
           <strong>Submitted On</strong>
           ${submissionDate}
         </div>
+
 
         <div class="detail-item">
           <strong>Resolution Deadline</strong>
@@ -436,6 +564,7 @@ function showComplaintDetails(complaintId) {
         <h3>
           Authority Actions
         </h3>
+
 
         <textarea
           id="actionNote"
@@ -497,7 +626,9 @@ function showComplaintDetails(complaintId) {
 }
 
 
-// Update Complaint Status
+// -----------------------------
+// UPDATE STATUS
+// -----------------------------
 
 function updateComplaintStatus(
   complaintId,
@@ -517,9 +648,12 @@ function updateComplaintStatus(
 
 
   const actionNote =
-    document.getElementById(
-      "actionNote"
-    ).value.trim();
+    document
+      .getElementById(
+        "actionNote"
+      )
+      .value
+      .trim();
 
 
   complaint.status =
@@ -541,6 +675,7 @@ function updateComplaintStatus(
         "Authority started working on this complaint.";
 
     }
+
 
     if (
       newStatus ===
@@ -578,7 +713,9 @@ function updateComplaintStatus(
 }
 
 
-// Close Complaint Details
+// -----------------------------
+// CLOSE DETAILS
+// -----------------------------
 
 function closeDetails() {
 
@@ -601,10 +738,14 @@ function closeDetails() {
 }
 
 
-// Handle New Complaint Submission
+// -----------------------------
+// NEW COMPLAINT SUBMISSION
+// -----------------------------
 
 document
-  .getElementById("complaintForm")
+  .getElementById(
+    "complaintForm"
+  )
   .addEventListener(
     "submit",
     function (event) {
@@ -613,33 +754,43 @@ document
 
 
       const type =
-        document.getElementById(
-          "complaintType"
-        ).value;
+        document
+          .getElementById(
+            "complaintType"
+          )
+          .value;
 
 
       const category =
-        document.getElementById(
-          "category"
-        ).value;
+        document
+          .getElementById(
+            "category"
+          )
+          .value;
 
 
       const title =
-        document.getElementById(
-          "title"
-        ).value;
+        document
+          .getElementById(
+            "title"
+          )
+          .value;
 
 
       const location =
-        document.getElementById(
-          "location"
-        ).value;
+        document
+          .getElementById(
+            "location"
+          )
+          .value;
 
 
       const description =
-        document.getElementById(
-          "description"
-        ).value;
+        document
+          .getElementById(
+            "description"
+          )
+          .value;
 
 
       const newComplaint = {
@@ -672,7 +823,9 @@ document
           ),
 
         authority:
-          getAuthority(type),
+          getAuthority(
+            type
+          ),
 
         createdAt:
           new Date()
@@ -680,13 +833,17 @@ document
             .split("T")[0],
 
         history: [
+
           {
+
             status:
               "Submitted",
 
             note:
               "Complaint submitted successfully."
+
           }
+
         ]
 
       };
@@ -696,6 +853,8 @@ document
         newComplaint
       );
 
+
+      checkEscalations();
 
       renderStats();
 
@@ -730,8 +889,12 @@ document
   );
 
 
-// Initial Application Render
+// -----------------------------
+// INITIAL APPLICATION LOAD
+// -----------------------------
+
+checkEscalations();
 
 renderStats();
 
-renderComplaints();       
+renderComplaints();
