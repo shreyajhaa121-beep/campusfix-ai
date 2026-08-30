@@ -1,11 +1,11 @@
-      // CampusFix AI - Application Logic
+// ==========================================
+// CampusFix AI - Application Logic
+// ==========================================
 
-const STORAGE_KEY = "campusfix_complaints";
 
-
-// -----------------------------
-// DEFAULT COMPLAINT DATA
-// -----------------------------
+// ------------------------------------------
+// Default Sample Complaints
+// ------------------------------------------
 
 const defaultComplaints = [
   {
@@ -18,13 +18,7 @@ const defaultComplaints = [
     status: "Pending",
     priority: "High",
     authority: "Hostel Warden",
-    createdAt: "2026-08-29",
-    history: [
-      {
-        status: "Submitted",
-        note: "Complaint submitted successfully."
-      }
-    ]
+    createdAt: "2026-08-29"
   },
   {
     id: "CF-2026-002",
@@ -36,17 +30,7 @@ const defaultComplaints = [
     status: "In Progress",
     priority: "Medium",
     authority: "College Safety Department",
-    createdAt: "2026-08-26",
-    history: [
-      {
-        status: "Submitted",
-        note: "Complaint submitted successfully."
-      },
-      {
-        status: "In Progress",
-        note: "Issue assigned to the responsible department."
-      }
-    ]
+    createdAt: "2026-08-26"
   },
   {
     id: "CF-2026-003",
@@ -58,17 +42,7 @@ const defaultComplaints = [
     status: "Resolved",
     priority: "Low",
     authority: "College Safety Department",
-    createdAt: "2026-08-20",
-    history: [
-      {
-        status: "Submitted",
-        note: "Complaint submitted successfully."
-      },
-      {
-        status: "Resolved",
-        note: "The electrical issue was resolved."
-      }
-    ]
+    createdAt: "2026-08-20"
   },
   {
     id: "CF-2026-004",
@@ -80,255 +54,201 @@ const defaultComplaints = [
     status: "Escalated",
     priority: "High",
     authority: "College Main Authority",
-    createdAt: "2026-08-18",
-    history: [
-      {
-        status: "Submitted",
-        note: "Complaint submitted successfully."
-      },
-      {
-        status: "Escalated",
-        note: "Resolution deadline passed. Escalated to College Main Authority."
-      }
-    ]
+    createdAt: "2026-08-18"
   }
 ];
 
 
-// -----------------------------
-// LOAD / SAVE DATA
-// -----------------------------
+// ------------------------------------------
+// Load Complaints from Local Storage
+// ------------------------------------------
 
-function loadComplaints() {
+let complaints;
+
+try {
 
   const savedComplaints =
-    localStorage.getItem(STORAGE_KEY);
+    localStorage.getItem("campusFixComplaints");
 
   if (savedComplaints) {
 
-    try {
+    complaints =
+      JSON.parse(savedComplaints);
 
-      return JSON.parse(savedComplaints);
+  } else {
 
-    } catch (error) {
+    complaints =
+      [...defaultComplaints];
 
-      console.error(
-        "Could not load saved complaints.",
-        error
-      );
-
-    }
-
+    saveComplaints();
   }
 
-  return defaultComplaints;
+} catch (error) {
 
+  complaints =
+    [...defaultComplaints];
+
+  saveComplaints();
 }
 
 
-let complaints =
-  loadComplaints();
-
+// ------------------------------------------
+// Save Complaints
+// ------------------------------------------
 
 function saveComplaints() {
 
   localStorage.setItem(
-    STORAGE_KEY,
+    "campusFixComplaints",
     JSON.stringify(complaints)
   );
-
 }
 
 
-// -----------------------------
-// UI NAVIGATION
-// -----------------------------
+// ------------------------------------------
+// Show Report Form
+// ------------------------------------------
 
 function showReportForm() {
 
   const reportSection =
     document.getElementById("reportSection");
 
-  reportSection.classList.remove("hidden");
+  const detailsSection =
+    document.getElementById("detailsSection");
 
-  reportSection.scrollIntoView({
-    behavior: "smooth"
-  });
+  if (detailsSection) {
+    detailsSection.classList.add("hidden");
+  }
 
+  if (reportSection) {
+
+    reportSection.classList.remove(
+      "hidden"
+    );
+
+    reportSection.scrollIntoView({
+      behavior: "smooth"
+    });
+  }
 }
 
+
+// ------------------------------------------
+// Show Dashboard
+// ------------------------------------------
 
 function showDashboard() {
 
-  document
-    .getElementById("dashboard")
-    .scrollIntoView({
+  const dashboard =
+    document.getElementById("dashboard");
+
+  if (dashboard) {
+
+    dashboard.scrollIntoView({
       behavior: "smooth"
     });
-
+  }
 }
 
 
-// -----------------------------
-// COMPLAINT UTILITIES
-// -----------------------------
+// ------------------------------------------
+// Generate Complaint ID
+// ------------------------------------------
 
 function generateComplaintId() {
 
-  return "CF-2026-" +
-    Date.now();
+  const randomNumber =
+    Math.floor(
+      1000 + Math.random() * 9000
+    );
 
+  return "CF-2026-" + randomNumber;
 }
 
+
+// ------------------------------------------
+// Determine Authority
+// ------------------------------------------
 
 function getAuthority(type) {
 
   if (type === "Hostel") {
+
     return "Hostel Warden";
   }
 
   return "College Safety Department";
-
 }
 
 
-function calculatePriority(category, description) {
+// ------------------------------------------
+// Calculate Priority
+// ------------------------------------------
+
+function calculatePriority(
+  category,
+  description
+) {
 
   const text =
-    (category + " " + description)
-      .toLowerCase();
+    (
+      category +
+      " " +
+      description
+    ).toLowerCase();
 
 
   if (
+
     text.includes("security") ||
     text.includes("danger") ||
     text.includes("fire") ||
     text.includes("water")
+
   ) {
+
     return "High";
   }
 
 
   if (
+
     text.includes("electrical") ||
     text.includes("wifi") ||
     text.includes("wi-fi") ||
     text.includes("internet")
+
   ) {
+
     return "Medium";
   }
 
 
   return "Low";
-
 }
 
+
+// ------------------------------------------
+// Get Status CSS Class
+// ------------------------------------------
 
 function getStatusClass(status) {
 
   if (status === "In Progress") {
+
     return "progress";
   }
 
-  return status.toLowerCase();
-
+  return status
+    .toLowerCase()
+    .replace(/\s+/g, "-");
 }
 
 
-// -----------------------------
-// 7-DAY AUTOMATIC ESCALATION
-// -----------------------------
-
-function checkEscalations() {
-
-  const today =
-    new Date();
-
-  let hasChanges =
-    false;
-
-
-  complaints.forEach(
-    complaint => {
-
-      if (
-        complaint.status === "Resolved" ||
-        complaint.status === "Escalated"
-      ) {
-        return;
-      }
-
-
-      const deadlineDate =
-        new Date(
-          complaint.createdAt
-        );
-
-
-      deadlineDate.setDate(
-        deadlineDate.getDate() + 7
-      );
-
-
-      if (
-        today > deadlineDate
-      ) {
-
-        complaint.status =
-          "Escalated";
-
-
-        complaint.authority =
-          "College Main Authority";
-
-
-        const alreadyEscalated =
-          complaint.history.some(
-            item =>
-              item.status === "Escalated"
-          );
-
-
-        if (
-          !alreadyEscalated
-        ) {
-
-          complaint.history.push({
-
-            status:
-              "Escalated",
-
-            note:
-              "7-day resolution deadline passed. Complaint automatically escalated to College Main Authority."
-
-          });
-
-        }
-
-
-        hasChanges =
-          true;
-
-      }
-
-    }
-  );
-
-
-  if (
-    hasChanges
-  ) {
-
-    saveComplaints();
-
-  }
-
-}
-
-
-// -----------------------------
-// DASHBOARD
-// -----------------------------
+// ------------------------------------------
+// Render Dashboard Statistics
+// ------------------------------------------
 
 function renderStats() {
 
@@ -346,46 +266,72 @@ function renderStats() {
   const inProgress =
     complaints.filter(
       complaint =>
-        complaint.status === "In Progress"
+        complaint.status ===
+        "In Progress"
     ).length;
 
 
-  const escalated =
+  const overdue =
     complaints.filter(
       complaint =>
-        complaint.status === "Escalated"
+        complaint.status ===
+        "Escalated"
     ).length;
 
 
-  document
-    .getElementById("totalIssues")
-    .textContent =
-    total;
+  const totalElement =
+    document.getElementById(
+      "totalIssues"
+    );
+
+  const pendingElement =
+    document.getElementById(
+      "pendingIssues"
+    );
+
+  const progressElement =
+    document.getElementById(
+      "progressIssues"
+    );
+
+  const overdueElement =
+    document.getElementById(
+      "overdueIssues"
+    );
 
 
-  document
-    .getElementById("pendingIssues")
-    .textContent =
-    pending;
+  if (totalElement) {
+
+    totalElement.textContent =
+      total;
+  }
 
 
-  document
-    .getElementById("progressIssues")
-    .textContent =
-    inProgress;
+  if (pendingElement) {
+
+    pendingElement.textContent =
+      pending;
+  }
 
 
-  document
-    .getElementById("overdueIssues")
-    .textContent =
-    escalated;
+  if (progressElement) {
 
+    progressElement.textContent =
+      inProgress;
+  }
+
+
+  if (overdueElement) {
+
+    overdueElement.textContent =
+      overdue;
+  }
 }
 
 
-// -----------------------------
-// COMPLAINT LIST
-// -----------------------------
+// ------------------------------------------
+// Render Complaint List
+// ------------------------------------------
 
 function renderComplaints() {
 
@@ -395,104 +341,123 @@ function renderComplaints() {
     );
 
 
+  if (!complaintsList) {
+
+    return;
+  }
+
+
   complaintsList.innerHTML = "";
+
+
+  if (complaints.length === 0) {
+
+    complaintsList.innerHTML = `
+      <p>
+        No complaints found.
+      </p>
+    `;
+
+    return;
+  }
 
 
   complaints
     .slice()
     .reverse()
-    .forEach(
-      complaint => {
-
-        const card =
-          document.createElement(
-            "div"
-          );
+    .forEach(function (complaint) {
 
 
-        card.className =
-          "complaint-card";
-
-
-        card.onclick =
-          function () {
-
-            showComplaintDetails(
-              complaint.id
-            );
-
-          };
-
-
-        card.innerHTML = `
-
-          <h3>
-            ${complaint.title}
-          </h3>
-
-          <p>
-            ${complaint.description}
-          </p>
-
-          <div class="complaint-meta">
-
-            <span>
-              📍 ${complaint.location}
-            </span>
-
-            <span>
-              🏷️ ${complaint.category}
-            </span>
-
-            <span>
-              👤 ${complaint.authority}
-            </span>
-
-            <span>
-              🔥 ${complaint.priority} Priority
-            </span>
-
-            <span
-              class="status ${getStatusClass(
-                complaint.status
-              )}"
-            >
-              ${complaint.status}
-            </span>
-
-          </div>
-
-        `;
-
-
-        complaintsList.appendChild(
-          card
+      const card =
+        document.createElement(
+          "div"
         );
 
-      }
-    );
 
+      card.className =
+        "complaint-card";
+
+
+      card.style.cursor =
+        "pointer";
+
+
+      card.innerHTML = `
+
+        <h3>
+          ${complaint.title}
+        </h3>
+
+        <p>
+          ${complaint.description}
+        </p>
+
+        <div class="complaint-meta">
+
+          <span>
+            📍 ${complaint.location}
+          </span>
+
+          <span>
+            🏷️ ${complaint.category}
+          </span>
+
+          <span>
+            👤 ${complaint.authority}
+          </span>
+
+          <span>
+            🔥 ${complaint.priority}
+            Priority
+          </span>
+
+          <span
+            class="status ${getStatusClass(
+              complaint.status
+            )}"
+          >
+            ${complaint.status}
+          </span>
+
+        </div>
+
+      `;
+
+
+      card.addEventListener(
+        "click",
+        function () {
+
+          showComplaintDetails(
+            complaint.id
+          );
+
+        }
+      );
+
+
+      complaintsList.appendChild(
+        card
+      );
+
+    });
 }
 
 
-// -----------------------------
-// COMPLAINT DETAILS
-// -----------------------------
+// ------------------------------------------
+// Show Complaint Details
+// ------------------------------------------
 
-function showComplaintDetails(
-  complaintId
-) {
+function showComplaintDetails(id) {
 
   const complaint =
     complaints.find(
-      item =>
-        item.id === complaintId
+      item => item.id === id
     );
 
 
-  if (
-    !complaint
-  ) {
+  if (!complaint) {
+
     return;
   }
 
@@ -509,353 +474,197 @@ function showComplaintDetails(
     );
 
 
-  const submissionDate =
-    new Date(
-      complaint.createdAt
-    ).toLocaleDateString();
-
-
-  const deadlineDate =
-    new Date(
-      complaint.createdAt
+  const reportSection =
+    document.getElementById(
+      "reportSection"
     );
 
 
-  deadlineDate.setDate(
-    deadlineDate.getDate() + 7
-  );
+  if (!detailsSection ||
+      !complaintDetails) {
+
+    return;
+  }
 
 
-  let historyHTML =
-    "";
+  if (reportSection) {
 
-
-  complaint.history.forEach(
-    item => {
-
-      historyHTML += `
-
-        <div class="history-item">
-
-          <strong>
-            ${item.status}
-          </strong>
-
-          <p>
-            ${item.note}
-          </p>
-
-        </div>
-
-      `;
-
-    }
-  );
+    reportSection.classList.add(
+      "hidden"
+    );
+  }
 
 
   complaintDetails.innerHTML = `
 
-    <div class="details-card">
+    <div class="complaint-detail-card">
 
-      <h3>
+      <h2>
         ${complaint.title}
-      </h3>
+      </h2>
 
       <p>
         ${complaint.description}
       </p>
 
+      <hr>
 
-      <div class="details-grid">
+      <p>
+        <strong>
+          Complaint ID:
+        </strong>
+        ${complaint.id}
+      </p>
 
-        <div class="detail-item">
-          <strong>Complaint ID</strong>
-          ${complaint.id}
-        </div>
+      <p>
+        <strong>
+          Type:
+        </strong>
+        ${complaint.type}
+      </p>
 
-        <div class="detail-item">
-          <strong>Status</strong>
-          ${complaint.status}
-        </div>
+      <p>
+        <strong>
+          Category:
+        </strong>
+        ${complaint.category}
+      </p>
 
-        <div class="detail-item">
-          <strong>Priority</strong>
-          ${complaint.priority}
-        </div>
+      <p>
+        <strong>
+          Location:
+        </strong>
+        ${complaint.location}
+      </p>
 
-        <div class="detail-item">
-          <strong>Category</strong>
-          ${complaint.category}
-        </div>
+      <p>
+        <strong>
+          Priority:
+        </strong>
+        ${complaint.priority}
+      </p>
 
-        <div class="detail-item">
-          <strong>Location</strong>
-          ${complaint.location}
-        </div>
+      <p>
+        <strong>
+          Authority:
+        </strong>
+        ${complaint.authority}
+      </p>
 
-        <div class="detail-item">
-          <strong>Complaint Type</strong>
-          ${complaint.type}
-        </div>
+      <p>
+        <strong>
+          Status:
+        </strong>
+        ${complaint.status}
+      </p>
 
-        <div class="detail-item">
-          <strong>Assigned Authority</strong>
-          ${complaint.authority}
-        </div>
-
-        <div class="detail-item">
-          <strong>Submitted On</strong>
-          ${submissionDate}
-        </div>
-
-        <div class="detail-item">
-          <strong>Resolution Deadline</strong>
-          ${deadlineDate.toLocaleDateString()}
-        </div>
-
-      </div>
-
-
-      <div class="authority-actions">
-
-        <h3>
-          Authority Actions
-        </h3>
-
-        <textarea
-          id="actionNote"
-          placeholder="Add an action or update note..."
-        ></textarea>
-
-
-        <div class="action-buttons">
-
-          <button
-            onclick="updateComplaintStatus(
-              '${complaint.id}',
-              'In Progress'
-            )"
-          >
-            Mark In Progress
-          </button>
-
-
-          <button
-            onclick="updateComplaintStatus(
-              '${complaint.id}',
-              'Resolved'
-            )"
-          >
-            Mark Resolved
-          </button>
-
-        </div>
-
-      </div>
-
-
-      <div class="complaint-history">
-
-        <h3>
-          Complaint Journey
-        </h3>
-
-        ${historyHTML}
-
-      </div>
+      <p>
+        <strong>
+          Submitted:
+        </strong>
+        ${complaint.createdAt}
+      </p>
 
     </div>
 
   `;
 
 
-  detailsSection
-    .classList
-    .remove("hidden");
-
-
-  detailsSection
-    .scrollIntoView({
-      behavior: "smooth"
-    });
-
-}
-
-
-// -----------------------------
-// UPDATE COMPLAINT STATUS
-// -----------------------------
-
-function updateComplaintStatus(
-  complaintId,
-  newStatus
-) {
-
-  const complaint =
-    complaints.find(
-      item =>
-        item.id === complaintId
-    );
-
-
-  if (
-    !complaint
-  ) {
-    return;
-  }
-
-
-  const actionNoteElement =
-    document.getElementById(
-      "actionNote"
-    );
-
-
-  const actionNote =
-    actionNoteElement
-      ? actionNoteElement.value.trim()
-      : "";
-
-
-  complaint.status =
-    newStatus;
-
-
-  let note =
-    actionNote;
-
-
-  if (
-    !note
-  ) {
-
-    if (
-      newStatus ===
-      "In Progress"
-    ) {
-
-      note =
-        "Authority started working on this complaint.";
-
-    }
-
-
-    if (
-      newStatus ===
-      "Resolved"
-    ) {
-
-      note =
-        "Authority marked this complaint as resolved.";
-
-    }
-
-  }
-
-
-  complaint.history.push({
-
-    status:
-      newStatus,
-
-    note:
-      note
-
-  });
-
-
-  saveComplaints();
-
-  renderStats();
-
-  renderComplaints();
-
-
-  showComplaintDetails(
-    complaintId
+  detailsSection.classList.remove(
+    "hidden"
   );
 
+
+  detailsSection.scrollIntoView({
+    behavior: "smooth"
+  });
 }
 
 
-// -----------------------------
-// CLOSE DETAILS
-// -----------------------------
+// ------------------------------------------
+// Close Complaint Details
+// ------------------------------------------
 
 function closeDetails() {
 
-  document
-    .getElementById(
+  const detailsSection =
+    document.getElementById(
       "detailsSection"
-    )
-    .classList
-    .add("hidden");
+    );
 
 
-  document
-    .getElementById(
+  if (detailsSection) {
+
+    detailsSection.classList.add(
+      "hidden"
+    );
+  }
+
+
+  const complaintsSection =
+    document.getElementById(
       "complaintsSection"
-    )
-    .scrollIntoView({
+    );
+
+
+  if (complaintsSection) {
+
+    complaintsSection.scrollIntoView({
       behavior: "smooth"
     });
-
+  }
 }
 
 
-// -----------------------------
-// NEW COMPLAINT SUBMISSION
-// -----------------------------
+// ------------------------------------------
+// Handle New Complaint Form
+// ------------------------------------------
 
-document
-  .getElementById(
+const complaintForm =
+  document.getElementById(
     "complaintForm"
-  )
-  .addEventListener(
+  );
+
+
+if (complaintForm) {
+
+
+  complaintForm.addEventListener(
     "submit",
     function (event) {
+
 
       event.preventDefault();
 
 
       const type =
-        document
-          .getElementById(
-            "complaintType"
-          )
-          .value;
+        document.getElementById(
+          "complaintType"
+        ).value;
 
 
       const category =
-        document
-          .getElementById(
-            "category"
-          )
-          .value;
+        document.getElementById(
+          "category"
+        ).value;
 
 
       const title =
-        document
-          .getElementById(
-            "title"
-          )
-          .value;
+        document.getElementById(
+          "title"
+        ).value;
 
 
       const location =
-        document
-          .getElementById(
-            "location"
-          )
-          .value;
+        document.getElementById(
+          "location"
+        ).value;
 
 
       const description =
-        document
-          .getElementById(
-            "description"
-          )
-          .value;
+        document.getElementById(
+          "description"
+        ).value;
 
 
       const newComplaint = {
@@ -888,24 +697,12 @@ document
           ),
 
         authority:
-          getAuthority(
-            type
-          ),
+          getAuthority(type),
 
         createdAt:
           new Date()
             .toISOString()
-            .split("T")[0],
-
-        history: [
-          {
-            status:
-              "Submitted",
-
-            note:
-              "Complaint submitted successfully."
-          }
-        ]
+            .split("T")[0]
 
       };
 
@@ -917,48 +714,65 @@ document
 
       saveComplaints();
 
-      checkEscalations();
 
       renderStats();
+
 
       renderComplaints();
 
 
-      document
-        .getElementById(
-          "complaintForm"
-        )
-        .reset();
+      complaintForm.reset();
 
 
       alert(
         "Complaint submitted successfully!\n\n" +
+
         "Complaint ID: " +
+
         newComplaint.id +
-        "\nAssigned to: " +
+
+        "\n\nAssigned to: " +
+
         newComplaint.authority
       );
 
 
-      document
-        .getElementById(
+      const reportSection =
+        document.getElementById(
+          "reportSection"
+        );
+
+
+      if (reportSection) {
+
+        reportSection.classList.add(
+          "hidden"
+        );
+      }
+
+
+      const complaintsSection =
+        document.getElementById(
           "complaintsSection"
-        )
-        .scrollIntoView({
+        );
+
+
+      if (complaintsSection) {
+
+        complaintsSection.scrollIntoView({
           behavior: "smooth"
         });
+      }
 
     }
   );
 
+}
 
-// -----------------------------
-// INITIAL APPLICATION LOAD
-// -----------------------------
 
-checkEscalations();
-
-saveComplaints();
+// ------------------------------------------
+// Initial Application Render
+// ------------------------------------------
 
 renderStats();
 
