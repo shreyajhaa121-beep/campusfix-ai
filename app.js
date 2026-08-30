@@ -55,46 +55,52 @@ const complaints = [
 // Show Report Form
 
 function showReportForm() {
-  document
-    .getElementById("reportSection")
-    .classList
-    .remove("hidden");
 
-  document
-    .getElementById("reportSection")
-    .scrollIntoView({
-      behavior: "smooth"
-    });
+  const reportSection =
+    document.getElementById("reportSection");
+
+  reportSection.classList.remove("hidden");
+
+  reportSection.scrollIntoView({
+    behavior: "smooth"
+  });
+
 }
 
 
 // Show Dashboard
 
 function showDashboard() {
+
   document
     .getElementById("dashboard")
     .scrollIntoView({
       behavior: "smooth"
     });
+
 }
 
 
 // Generate Complaint ID
 
 function generateComplaintId() {
+
   return "CF-2026-" +
     Math.floor(100 + Math.random() * 900);
+
 }
 
 
 // Determine Authority
 
 function getAuthority(type) {
+
   if (type === "Hostel") {
     return "Hostel Warden";
   }
 
   return "College Safety Department";
+
 }
 
 
@@ -102,9 +108,10 @@ function getAuthority(type) {
 
 function calculatePriority(category, description) {
 
-  const text = (
-    category + " " + description
-  ).toLowerCase();
+  const text =
+    (category + " " + description)
+      .toLowerCase();
+
 
   if (
     text.includes("security") ||
@@ -115,54 +122,19 @@ function calculatePriority(category, description) {
     return "High";
   }
 
+
   if (
     text.includes("electrical") ||
     text.includes("wifi") ||
+    text.includes("wi-fi") ||
     text.includes("internet")
   ) {
     return "Medium";
   }
 
+
   return "Low";
-}
 
-
-// Render Dashboard Statistics
-
-function renderStats() {
-
-  const total = complaints.length;
-
-  const pending = complaints.filter(
-    complaint =>
-      complaint.status === "Pending"
-  ).length;
-
-  const inProgress = complaints.filter(
-    complaint =>
-      complaint.status === "In Progress"
-  ).length;
-
-  const overdue = complaints.filter(
-    complaint =>
-      complaint.status === "Escalated"
-  ).length;
-
-  document
-    .getElementById("totalIssues")
-    .textContent = total;
-
-  document
-    .getElementById("pendingIssues")
-    .textContent = pending;
-
-  document
-    .getElementById("progressIssues")
-    .textContent = inProgress;
-
-  document
-    .getElementById("overdueIssues")
-    .textContent = overdue;
 }
 
 
@@ -175,6 +147,58 @@ function getStatusClass(status) {
   }
 
   return status.toLowerCase();
+
+}
+
+
+// Render Dashboard Statistics
+
+function renderStats() {
+
+  const total =
+    complaints.length;
+
+
+  const pending =
+    complaints.filter(
+      complaint =>
+        complaint.status === "Pending"
+    ).length;
+
+
+  const inProgress =
+    complaints.filter(
+      complaint =>
+        complaint.status === "In Progress"
+    ).length;
+
+
+  const overdue =
+    complaints.filter(
+      complaint =>
+        complaint.status === "Escalated"
+    ).length;
+
+
+  document
+    .getElementById("totalIssues")
+    .textContent = total;
+
+
+  document
+    .getElementById("pendingIssues")
+    .textContent = pending;
+
+
+  document
+    .getElementById("progressIssues")
+    .textContent = inProgress;
+
+
+  document
+    .getElementById("overdueIssues")
+    .textContent = overdue;
+
 }
 
 
@@ -185,24 +209,44 @@ function renderComplaints() {
   const complaintsList =
     document.getElementById("complaintsList");
 
+
   complaintsList.innerHTML = "";
+
 
   complaints
     .slice()
     .reverse()
     .forEach(complaint => {
 
+
       const card =
         document.createElement("div");
 
-      card.className = "complaint-card";
+
+      card.className =
+        "complaint-card";
+
+
+      // Make every complaint card clickable
+
+      card.onclick =
+        function () {
+
+          showComplaintDetails(
+            complaint.id
+          );
+
+        };
+
 
       card.innerHTML = `
+
         <h3>${complaint.title}</h3>
 
         <p>
           ${complaint.description}
         </p>
+
 
         <div class="complaint-meta">
 
@@ -210,36 +254,245 @@ function renderComplaints() {
             📍 ${complaint.location}
           </span>
 
+
           <span>
             🏷️ ${complaint.category}
           </span>
+
 
           <span>
             👤 ${complaint.authority}
           </span>
 
+
           <span>
             🔥 ${complaint.priority} Priority
           </span>
+
 
           <span
             class="status ${getStatusClass(
               complaint.status
             )}"
           >
+
             ${complaint.status}
+
           </span>
 
         </div>
+
       `;
+
 
       complaintsList.appendChild(card);
 
     });
+
 }
 
 
-// Handle New Complaint
+// Show Complaint Details
+
+function showComplaintDetails(complaintId) {
+
+  const complaint =
+    complaints.find(
+      item =>
+        item.id === complaintId
+    );
+
+
+  if (!complaint) {
+    return;
+  }
+
+
+  const detailsSection =
+    document.getElementById(
+      "detailsSection"
+    );
+
+
+  const complaintDetails =
+    document.getElementById(
+      "complaintDetails"
+    );
+
+
+  const submissionDate =
+    new Date(
+      complaint.createdAt
+    ).toLocaleDateString();
+
+
+  const deadlineDate =
+    new Date(
+      complaint.createdAt
+    );
+
+
+  deadlineDate.setDate(
+    deadlineDate.getDate() + 7
+  );
+
+
+  complaintDetails.innerHTML = `
+
+    <div class="details-card">
+
+      <h3>
+        ${complaint.title}
+      </h3>
+
+
+      <p>
+        ${complaint.description}
+      </p>
+
+
+      <div class="details-grid">
+
+
+        <div class="detail-item">
+
+          <strong>
+            Complaint ID
+          </strong>
+
+          ${complaint.id}
+
+        </div>
+
+
+        <div class="detail-item">
+
+          <strong>
+            Status
+          </strong>
+
+          ${complaint.status}
+
+        </div>
+
+
+        <div class="detail-item">
+
+          <strong>
+            Priority
+          </strong>
+
+          ${complaint.priority}
+
+        </div>
+
+
+        <div class="detail-item">
+
+          <strong>
+            Category
+          </strong>
+
+          ${complaint.category}
+
+        </div>
+
+
+        <div class="detail-item">
+
+          <strong>
+            Location
+          </strong>
+
+          ${complaint.location}
+
+        </div>
+
+
+        <div class="detail-item">
+
+          <strong>
+            Complaint Type
+          </strong>
+
+          ${complaint.type}
+
+        </div>
+
+
+        <div class="detail-item">
+
+          <strong>
+            Assigned Authority
+          </strong>
+
+          ${complaint.authority}
+
+        </div>
+
+
+        <div class="detail-item">
+
+          <strong>
+            Submitted On
+          </strong>
+
+          ${submissionDate}
+
+        </div>
+
+
+        <div class="detail-item">
+
+          <strong>
+            Resolution Deadline
+          </strong>
+
+          ${deadlineDate.toLocaleDateString()}
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  detailsSection
+    .classList
+    .remove("hidden");
+
+
+  detailsSection
+    .scrollIntoView({
+      behavior: "smooth"
+    });
+
+}
+
+
+// Close Complaint Details
+
+function closeDetails() {
+
+  document
+    .getElementById("detailsSection")
+    .classList
+    .add("hidden");
+
+
+  document
+    .getElementById("complaintsSection")
+    .scrollIntoView({
+      behavior: "smooth"
+    });
+
+}
+
+
+// Handle New Complaint Submission
 
 document
   .getElementById("complaintForm")
@@ -247,27 +500,33 @@ document
     "submit",
     function (event) {
 
+
       event.preventDefault();
+
 
       const type =
         document.getElementById(
           "complaintType"
         ).value;
 
+
       const category =
         document.getElementById(
           "category"
         ).value;
+
 
       const title =
         document.getElementById(
           "title"
         ).value;
 
+
       const location =
         document.getElementById(
           "location"
         ).value;
+
 
       const description =
         document.getElementById(
@@ -277,19 +536,26 @@ document
 
       const newComplaint = {
 
-        id: generateComplaintId(),
+        id:
+          generateComplaintId(),
 
-        title: title,
+        title:
+          title,
 
-        type: type,
+        type:
+          type,
 
-        category: category,
+        category:
+          category,
 
-        location: location,
+        location:
+          location,
 
-        description: description,
+        description:
+          description,
 
-        status: "Pending",
+        status:
+          "Pending",
 
         priority:
           calculatePriority(
@@ -308,15 +574,25 @@ document
       };
 
 
+      // Add complaint to list
+
       complaints.push(
         newComplaint
       );
 
 
+      // Update dashboard
+
       renderStats();
+
+
+      // Re-render complaint cards
+      // New complaint will also be clickable
 
       renderComplaints();
 
+
+      // Reset form
 
       document
         .getElementById(
@@ -334,6 +610,8 @@ document
       );
 
 
+      // Go to complaint list
+
       document
         .getElementById(
           "complaintsSection"
@@ -346,7 +624,7 @@ document
   );
 
 
-// Initial Render
+// Initial Application Render
 
 renderStats();
 
