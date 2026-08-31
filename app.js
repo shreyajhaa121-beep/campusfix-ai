@@ -560,6 +560,107 @@ function formatDeadlineDate(
 
 }
 
+// ==========================================
+// GET ESCALATION INFORMATION
+// ==========================================
+
+function getEscalationInfo(
+  complaint
+) {
+
+  // Only show escalation information
+  // when complaint is escalated
+
+  if (
+    complaint.status !==
+    "Escalated"
+  ) {
+
+    return "";
+
+  }
+
+
+  const previousAuthority =
+
+    complaint.type ===
+    "Hostel"
+
+      ? "Hostel Warden"
+
+      : "College Safety Department";
+
+
+  const escalatedAuthority =
+    "College Main Authority";
+
+
+  return `
+
+    <div class="escalation-info">
+
+      <div class="escalation-icon">
+
+        ⚠
+
+      </div>
+
+
+      <div class="escalation-content">
+
+        <h3>
+          Complaint Escalated
+        </h3>
+
+
+        <p>
+
+          This complaint was not resolved
+          within the 7-day resolution period.
+
+        </p>
+
+
+        <p>
+
+          <strong>
+            Previous Authority:
+          </strong>
+
+          ${previousAuthority}
+
+        </p>
+
+
+        <p>
+
+          <strong>
+            Escalated To:
+          </strong>
+
+          ${escalatedAuthority}
+
+        </p>
+
+
+        <p>
+
+          <strong>
+            Escalation Reason:
+          </strong>
+
+          7-day resolution deadline expired.
+
+        </p>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
 
 // ==========================================
 // GET DEADLINE STATUS
@@ -1800,6 +1901,10 @@ function showComplaintDetails(id) {
     complaint
   )}
 </p>
+
+${getEscalationInfo(
+  complaint
+)}
 
 
       <hr>
