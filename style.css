@@ -1337,3 +1337,75 @@ textarea {
   }
 
 }
+/* =========================================
+   DEADLINE COUNTDOWN BADGES
+========================================= */
+
+.deadline {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+
+  margin-top: 10px;
+  padding: 7px 12px;
+
+  border-radius: 999px;
+
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  border: 1px solid #bfdbfe;
+}
+
+
+/* URGENT DEADLINE */
+
+.deadline.urgent {
+  background: #fff7ed;
+  color: #ea580c;
+
+  border-color: #fed7aa;
+}
+
+
+/* OVERDUE / ESCALATED */
+
+.deadline.overdue {
+  background: #fef2f2;
+  color: #dc2626;
+
+  border-color: #fecaca;
+}
+
+
+/* RESOLVED */
+
+.deadline.resolved-deadline {
+  background: #f0fdf4;
+  color: #16a34a;
+
+  border-color: #bbf7d0;
+}
+
+
+/* AUTHORITY DASHBOARD ALIGNMENT */
+
+.authority-complaint-top .deadline {
+  margin-top: 8px;
+}
+
+
+/* MOBILE RESPONSIVENESS */
+
+@media (max-width: 600px) {
+
+  .deadline {
+    font-size: 0.78rem;
+    padding: 6px 10px;
+    margin-top: 8px;
+  }
+
+}
