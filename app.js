@@ -497,6 +497,68 @@ function getDaysRemaining(
   );
 
 }
+// ==========================================
+// GET EXACT DEADLINE DATE
+// ==========================================
+
+function getDeadlineDate(
+  complaint
+) {
+
+  const createdDate =
+    new Date(
+      complaint.createdAt
+    );
+
+
+  createdDate.setHours(
+    0,
+    0,
+    0,
+    0
+  );
+
+
+  const deadline =
+    new Date(
+      createdDate
+    );
+
+
+  deadline.setDate(
+    deadline.getDate() + 7
+  );
+
+
+  return deadline;
+
+}
+
+
+// ==========================================
+// FORMAT DEADLINE DATE
+// ==========================================
+
+function formatDeadlineDate(
+  complaint
+) {
+
+  const deadline =
+    getDeadlineDate(
+      complaint
+    );
+
+
+  return deadline.toLocaleDateString(
+    "en-IN",
+    {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }
+  );
+
+}
 
 
 // ==========================================
@@ -1717,6 +1779,27 @@ function showComplaintDetails(id) {
         <strong>Submitted:</strong>
         ${complaint.createdAt}
       </p>
+      
+      <p>
+  <strong>
+    Resolution Deadline:
+  </strong>
+
+  ${formatDeadlineDate(
+    complaint
+  )}
+</p>
+
+
+<p>
+  <strong>
+    Time Remaining:
+  </strong>
+
+  ${getDeadlineLabel(
+    complaint
+  )}
+</p>
 
 
       <hr>
