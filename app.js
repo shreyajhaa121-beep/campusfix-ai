@@ -419,6 +419,173 @@ function calculatePriority(
   return "Low";
 
 }
+// ==========================================
+// 7-DAY DEADLINE HELPERS
+// ==========================================
+
+function getDaysRemaining(
+  complaint
+) {
+
+  // Resolved complaints do not need countdown
+
+  if (
+    complaint.status ===
+    "Resolved"
+  ) {
+
+    return null;
+
+  }
+
+
+  const createdDate =
+    new Date(
+      complaint.createdAt
+    );
+
+
+  const today =
+    new Date();
+
+
+  // Remove time so calculation is based on dates
+
+  createdDate.setHours(
+    0,
+    0,
+    0,
+    0
+  );
+
+
+  today.setHours(
+    0,
+    0,
+    0,
+    0
+  );
+
+
+  const deadline =
+    new Date(
+      createdDate
+    );
+
+
+  deadline.setDate(
+    deadline.getDate() + 7
+  );
+
+
+  const difference =
+    deadline -
+    today;
+
+
+  return Math.ceil(
+
+    difference /
+
+    (
+      1000 *
+      60 *
+      60 *
+      24
+    )
+
+  );
+
+}
+
+
+// ==========================================
+// GET DEADLINE STATUS
+// ==========================================
+
+function getDeadlineLabel(
+  complaint
+) {
+
+  const daysRemaining =
+    getDaysRemaining(
+      complaint
+    );
+
+
+  if (
+    daysRemaining === null
+  ) {
+
+    return `
+      <span class="deadline resolved-deadline">
+        ✓ Resolved
+      </span>
+    `;
+
+  }
+
+
+  if (
+    complaint.status ===
+    "Escalated"
+  ) {
+
+    return `
+      <span class="deadline overdue">
+        ⚠ Escalated
+      </span>
+    `;
+
+  }
+
+
+  if (
+    daysRemaining < 0
+  ) {
+
+    return `
+      <span class="deadline overdue">
+        ⚠ Overdue
+      </span>
+    `;
+
+  }
+
+
+  if (
+    daysRemaining === 0
+  ) {
+
+    return `
+      <span class="deadline urgent">
+        ⏳ Deadline today
+      </span>
+    `;
+
+  }
+
+
+  if (
+    daysRemaining === 1
+  ) {
+
+    return `
+      <span class="deadline urgent">
+        ⏳ 1 day remaining
+      </span>
+    `;
+
+  }
+
+
+  return `
+    <span class="deadline">
+      ⏳ ${daysRemaining} days remaining
+    </span>
+  `;
+
+}
 
 
 // ==========================================
@@ -1213,6 +1380,10 @@ function renderComplaints() {
               ${complaint.status}
 
             </span>
+            
+            ${getDeadlineLabel(
+  complaint
+)}
 
           </div>
 
