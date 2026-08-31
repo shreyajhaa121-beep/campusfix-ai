@@ -451,7 +451,7 @@ function getStatusClass(status) {
 // ==========================================
 
 function renderStats() {
-
+  
   const total =
     complaints.length;
 
@@ -513,7 +513,7 @@ function renderStats() {
       total;
 
   }
-
+  
 
   if (pendingElement) {
 
@@ -537,6 +537,374 @@ function renderStats() {
       escalated;
 
   }
+
+}
+// ==========================================
+// AUTHORITY DASHBOARD
+// ==========================================
+
+function renderAuthorityDashboard() {
+
+  const authorityFilter =
+    document.getElementById(
+      "authorityFilter"
+    );
+
+
+  const authorityComplaintsList =
+    document.getElementById(
+      "authorityComplaintsList"
+    );
+
+
+  if (
+    !authorityComplaintsList
+  ) {
+
+    return;
+
+  }
+
+
+  // Selected authority
+
+  const selectedAuthority =
+
+    authorityFilter
+
+      ? authorityFilter.value
+
+      : "All";
+
+
+  // Filter complaints
+
+  let authorityComplaints =
+
+    complaints.filter(
+
+      complaint => {
+
+        if (
+          selectedAuthority ===
+          "All"
+        ) {
+
+          return true;
+
+        }
+
+
+        return (
+
+          complaint.authority ===
+          selectedAuthority
+
+        );
+
+      }
+
+    );
+
+
+  // ==========================================
+  // AUTHORITY STATISTICS
+  // ==========================================
+
+  const assignedIssues =
+
+    authorityComplaints.length;
+
+
+  const pendingIssues =
+
+    authorityComplaints.filter(
+
+      complaint =>
+
+        complaint.status ===
+        "Pending"
+
+    ).length;
+
+
+  const progressIssues =
+
+    authorityComplaints.filter(
+
+      complaint =>
+
+        complaint.status ===
+        "In Progress"
+
+    ).length;
+
+
+  const escalatedIssues =
+
+    authorityComplaints.filter(
+
+      complaint =>
+
+        complaint.status ===
+        "Escalated"
+
+    ).length;
+
+
+  // Update dashboard numbers
+
+  const assignedElement =
+    document.getElementById(
+      "assignedIssues"
+    );
+
+
+  const pendingElement =
+    document.getElementById(
+      "authorityPending"
+    );
+
+
+  const progressElement =
+    document.getElementById(
+      "authorityProgress"
+    );
+
+
+  const escalatedElement =
+    document.getElementById(
+      "authorityEscalated"
+    );
+
+
+  if (
+    assignedElement
+  ) {
+
+    assignedElement.textContent =
+      assignedIssues;
+
+  }
+
+
+  if (
+    pendingElement
+  ) {
+
+    pendingElement.textContent =
+      pendingIssues;
+
+  }
+
+
+  if (
+    progressElement
+  ) {
+
+    progressElement.textContent =
+      progressIssues;
+
+  }
+
+
+  if (
+    escalatedElement
+  ) {
+
+    escalatedElement.textContent =
+      escalatedIssues;
+
+  }
+
+
+  // ==========================================
+  // RENDER AUTHORITY COMPLAINTS
+  // ==========================================
+
+  authorityComplaintsList.innerHTML =
+    "";
+
+
+  if (
+    authorityComplaints.length === 0
+  ) {
+
+    authorityComplaintsList.innerHTML = `
+
+      <p class="no-authority-complaints">
+
+        No complaints assigned to this authority.
+
+      </p>
+
+    `;
+
+
+    return;
+
+  }
+
+
+  authorityComplaints
+
+    .slice()
+
+    .reverse()
+
+    .forEach(
+
+      complaint => {
+
+
+        const card =
+          document.createElement(
+            "div"
+          );
+
+
+        card.className =
+          "authority-complaint-card";
+
+
+        card.innerHTML = `
+
+          <div
+            class="authority-complaint-top"
+          >
+
+            <div>
+
+              <h3>
+                ${complaint.title}
+              </h3>
+
+              <p>
+                ${complaint.description}
+              </p>
+
+            </div>
+
+
+            <span
+              class="status ${getStatusClass(
+                complaint.status
+              )}"
+            >
+
+              ${complaint.status}
+
+            </span>
+
+          </div>
+
+
+          <div
+            class="authority-complaint-meta"
+          >
+
+            <span>
+              📍 ${complaint.location}
+            </span>
+
+
+            <span>
+              🏷️ ${complaint.category}
+            </span>
+
+
+            <span>
+              🔥 ${complaint.priority} Priority
+            </span>
+
+
+            <span>
+              🆔 ${complaint.id}
+            </span>
+
+          </div>
+
+
+          <div
+            class="authority-card-actions"
+          >
+
+            <button
+              type="button"
+              onclick="
+                openAuthorityComplaint(
+                  '${complaint.id}'
+                )
+              "
+            >
+
+              Manage Complaint
+
+            </button>
+
+          </div>
+
+        `;
+
+
+        authorityComplaintsList.appendChild(
+          card
+        );
+
+      }
+
+    );
+
+}
+
+
+// ==========================================
+// OPEN AUTHORITY COMPLAINT
+// ==========================================
+
+function openAuthorityComplaint(
+  complaintId
+) {
+
+  showComplaintDetails(
+    complaintId
+  );
+
+}
+
+
+// ==========================================
+// AUTHORITY FILTER EVENT
+// ==========================================
+
+function setupAuthorityFilter() {
+
+  const authorityFilter =
+    document.getElementById(
+      "authorityFilter"
+    );
+
+
+  if (
+    !authorityFilter
+  ) {
+
+    return;
+
+  }
+
+
+  authorityFilter.addEventListener(
+
+    "change",
+
+    function () {
+
+      renderAuthorityDashboard();
+
+    }
+
+  );
 
 }
 
@@ -1416,6 +1784,8 @@ function updateComplaintStatus(
 
 
   renderComplaints();
+  
+  renderAuthorityDashboard();
 
 
   showComplaintDetails(
@@ -1607,6 +1977,8 @@ if (complaintForm) {
 
 
       renderComplaints();
+      
+      renderAuthorityDashboard();
 
 
       complaintForm.reset();
@@ -1777,3 +2149,7 @@ renderStats();
 
 
 renderComplaints();
+
+setupAuthorityFilter();
+
+renderAuthorityDashboard();
