@@ -1555,6 +1555,7 @@ if (complaintForm) {
           "Pending",
 
         priority:
+
           calculatePriority(
             category,
             description
@@ -1621,7 +1622,9 @@ if (complaintForm) {
 
         "\n\nAssigned to: " +
 
-        newComplaint.authority
+        newComplaint.authority +
+
+        "\n\nAutomatic escalation will occur if the complaint is not resolved within 7 days."
 
       );
 
@@ -1696,8 +1699,11 @@ const priorityFilter =
 if (searchComplaint) {
 
   searchComplaint.addEventListener(
+
     "input",
+
     renderComplaints
+
   );
 
 }
@@ -1706,8 +1712,11 @@ if (searchComplaint) {
 if (statusFilter) {
 
   statusFilter.addEventListener(
+
     "change",
+
     renderComplaints
+
   );
 
 }
@@ -1716,8 +1725,11 @@ if (statusFilter) {
 if (typeFilter) {
 
   typeFilter.addEventListener(
+
     "change",
+
     renderComplaints
+
   );
 
 }
@@ -1726,8 +1738,11 @@ if (typeFilter) {
 if (priorityFilter) {
 
   priorityFilter.addEventListener(
+
     "change",
+
     renderComplaints
+
   );
 
 }
@@ -1752,6 +1767,9 @@ complaints =
   );
 
 
+checkAutomaticEscalation();
+
+
 saveComplaints();
 
 
@@ -1759,4 +1777,3 @@ renderStats();
 
 
 renderComplaints();
-  
