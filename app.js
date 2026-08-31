@@ -390,21 +390,10 @@ function calculatePriority(
 
   if (
 
-    text.includes(
-      "security"
-    ) ||
-
-    text.includes(
-      "danger"
-    ) ||
-
-    text.includes(
-      "fire"
-    ) ||
-
-    text.includes(
-      "water"
-    )
+    text.includes("security") ||
+    text.includes("danger") ||
+    text.includes("fire") ||
+    text.includes("water")
 
   ) {
 
@@ -415,21 +404,10 @@ function calculatePriority(
 
   if (
 
-    text.includes(
-      "electrical"
-    ) ||
-
-    text.includes(
-      "wifi"
-    ) ||
-
-    text.includes(
-      "wi-fi"
-    ) ||
-
-    text.includes(
-      "internet"
-    )
+    text.includes("electrical") ||
+    text.includes("wifi") ||
+    text.includes("wi-fi") ||
+    text.includes("internet")
 
   ) {
 
@@ -447,14 +425,9 @@ function calculatePriority(
 // Get Status CSS Class
 // ==========================================
 
-function getStatusClass(
-  status
-) {
+function getStatusClass(status) {
 
-  if (
-    status ===
-    "In Progress"
-  ) {
+  if (status === "In Progress") {
 
     return "progress";
 
@@ -487,8 +460,7 @@ function renderStats() {
     complaints.filter(
 
       complaint =>
-        complaint.status ===
-        "Pending"
+        complaint.status === "Pending"
 
     ).length;
 
@@ -497,8 +469,7 @@ function renderStats() {
     complaints.filter(
 
       complaint =>
-        complaint.status ===
-        "In Progress"
+        complaint.status === "In Progress"
 
     ).length;
 
@@ -507,8 +478,7 @@ function renderStats() {
     complaints.filter(
 
       complaint =>
-        complaint.status ===
-        "Escalated"
+        complaint.status === "Escalated"
 
     ).length;
 
@@ -572,6 +542,195 @@ function renderStats() {
 
 
 // ==========================================
+// Get Filtered Complaints
+// ==========================================
+
+function getFilteredComplaints() {
+
+  const searchInput =
+    document.getElementById(
+      "searchComplaint"
+    );
+
+
+  const statusFilter =
+    document.getElementById(
+      "statusFilter"
+    );
+
+
+  const typeFilter =
+    document.getElementById(
+      "typeFilter"
+    );
+
+
+  const priorityFilter =
+    document.getElementById(
+      "priorityFilter"
+    );
+
+
+  const searchText =
+    searchInput
+      ? searchInput.value
+          .trim()
+          .toLowerCase()
+      : "";
+
+
+  const selectedStatus =
+    statusFilter
+      ? statusFilter.value
+      : "";
+
+
+  const selectedType =
+    typeFilter
+      ? typeFilter.value
+      : "";
+
+
+  const selectedPriority =
+    priorityFilter
+      ? priorityFilter.value
+      : "";
+
+
+  return complaints.filter(
+    complaint => {
+
+
+      const searchableText = (
+
+        complaint.title +
+        " " +
+        complaint.description +
+        " " +
+        complaint.location +
+        " " +
+        complaint.category +
+        " " +
+        complaint.authority
+
+      ).toLowerCase();
+
+
+      const matchesSearch =
+
+        !searchText ||
+
+        searchableText.includes(
+          searchText
+        );
+
+
+      const matchesStatus =
+
+        !selectedStatus ||
+
+        complaint.status ===
+          selectedStatus;
+
+
+      const matchesType =
+
+        !selectedType ||
+
+        complaint.type ===
+          selectedType;
+
+
+      const matchesPriority =
+
+        !selectedPriority ||
+
+        complaint.priority ===
+          selectedPriority;
+
+
+      return (
+
+        matchesSearch &&
+
+        matchesStatus &&
+
+        matchesType &&
+
+        matchesPriority
+
+      );
+
+    }
+  );
+
+}
+
+
+// ==========================================
+// Clear Filters
+// ==========================================
+
+function clearFilters() {
+
+  const searchInput =
+    document.getElementById(
+      "searchComplaint"
+    );
+
+
+  const statusFilter =
+    document.getElementById(
+      "statusFilter"
+    );
+
+
+  const typeFilter =
+    document.getElementById(
+      "typeFilter"
+    );
+
+
+  const priorityFilter =
+    document.getElementById(
+      "priorityFilter"
+    );
+
+
+  if (searchInput) {
+
+    searchInput.value = "";
+
+  }
+
+
+  if (statusFilter) {
+
+    statusFilter.value = "";
+
+  }
+
+
+  if (typeFilter) {
+
+    typeFilter.value = "";
+
+  }
+
+
+  if (priorityFilter) {
+
+    priorityFilter.value = "";
+
+  }
+
+
+  renderComplaints();
+
+}
+
+
+// ==========================================
 // Render Complaint List
 // ==========================================
 
@@ -590,18 +749,22 @@ function renderComplaints() {
   }
 
 
+  const filteredComplaints =
+    getFilteredComplaints();
+
+
   complaintsList.innerHTML =
     "";
 
 
   if (
-    complaints.length === 0
+    filteredComplaints.length === 0
   ) {
 
     complaintsList.innerHTML = `
 
-      <p>
-        No complaints found.
+      <p class="no-results">
+        No complaints found matching your filters.
       </p>
 
     `;
@@ -611,7 +774,7 @@ function renderComplaints() {
   }
 
 
-  complaints
+  filteredComplaints
 
     .slice()
 
@@ -640,6 +803,7 @@ function renderComplaints() {
           <h3>
             ${complaint.title}
           </h3>
+
 
           <p>
             ${complaint.description}
@@ -723,8 +887,6 @@ function getActionButtons(
   let buttons = "";
 
 
-  // Pending Complaint
-
   if (
     complaint.status ===
     "Pending"
@@ -762,8 +924,6 @@ function getActionButtons(
   }
 
 
-  // In Progress Complaint
-
   else if (
     complaint.status ===
     "In Progress"
@@ -787,8 +947,6 @@ function getActionButtons(
 
   }
 
-
-  // Escalated Complaint
 
   else if (
     complaint.status ===
@@ -827,8 +985,6 @@ function getActionButtons(
   }
 
 
-  // Resolved Complaint
-
   else if (
     complaint.status ===
     "Resolved"
@@ -856,9 +1012,7 @@ function getActionButtons(
 // Show Complaint Details
 // ==========================================
 
-function showComplaintDetails(
-  id
-) {
+function showComplaintDetails(id) {
 
   const complaint =
     complaints.find(
@@ -979,73 +1133,49 @@ function showComplaintDetails(
 
 
       <p>
-        <strong>
-          Complaint ID:
-        </strong>
-
+        <strong>Complaint ID:</strong>
         ${complaint.id}
       </p>
 
 
       <p>
-        <strong>
-          Type:
-        </strong>
-
+        <strong>Type:</strong>
         ${complaint.type}
       </p>
 
 
       <p>
-        <strong>
-          Category:
-        </strong>
-
+        <strong>Category:</strong>
         ${complaint.category}
       </p>
 
 
       <p>
-        <strong>
-          Location:
-        </strong>
-
+        <strong>Location:</strong>
         ${complaint.location}
       </p>
 
 
       <p>
-        <strong>
-          Priority:
-        </strong>
-
+        <strong>Priority:</strong>
         ${complaint.priority}
       </p>
 
 
       <p>
-        <strong>
-          Authority:
-        </strong>
-
+        <strong>Authority:</strong>
         ${complaint.authority}
       </p>
 
 
       <p>
-        <strong>
-          Status:
-        </strong>
-
+        <strong>Status:</strong>
         ${complaint.status}
       </p>
 
 
       <p>
-        <strong>
-          Submitted:
-        </strong>
-
+        <strong>Submitted:</strong>
         ${complaint.createdAt}
       </p>
 
@@ -1060,16 +1190,13 @@ function showComplaintDetails(
 
       ${
 
-        complaint.status !==
-        "Resolved"
+        complaint.status !== "Resolved"
 
           ? `
 
             <textarea
               id="actionNote"
-              placeholder="
-                Add an action/update note...
-              "
+              placeholder="Add an action/update note..."
             ></textarea>
 
           `
@@ -1150,8 +1277,6 @@ function updateComplaintStatus(
   }
 
 
-  // Prevent same status update
-
   if (
     complaint.status ===
     newStatus
@@ -1167,8 +1292,6 @@ function updateComplaintStatus(
 
   }
 
-
-  // Prevent changing resolved complaint
 
   if (
     complaint.status ===
@@ -1190,8 +1313,7 @@ function updateComplaintStatus(
     );
 
 
-  let note =
-    "";
+  let note = "";
 
 
   if (
@@ -1249,8 +1371,6 @@ function updateComplaintStatus(
   complaint.status =
     newStatus;
 
-
-  // Check duplicate history
 
   const lastHistoryItem =
     complaint.history[
@@ -1371,7 +1491,6 @@ if (complaintForm) {
     "submit",
 
     function (event) {
-
 
       event.preventDefault();
 
@@ -1547,6 +1666,74 @@ if (complaintForm) {
 
 
 // ==========================================
+// Filter Event Listeners
+// ==========================================
+
+const searchComplaint =
+  document.getElementById(
+    "searchComplaint"
+  );
+
+
+const statusFilter =
+  document.getElementById(
+    "statusFilter"
+  );
+
+
+const typeFilter =
+  document.getElementById(
+    "typeFilter"
+  );
+
+
+const priorityFilter =
+  document.getElementById(
+    "priorityFilter"
+  );
+
+
+if (searchComplaint) {
+
+  searchComplaint.addEventListener(
+    "input",
+    renderComplaints
+  );
+
+}
+
+
+if (statusFilter) {
+
+  statusFilter.addEventListener(
+    "change",
+    renderComplaints
+  );
+
+}
+
+
+if (typeFilter) {
+
+  typeFilter.addEventListener(
+    "change",
+    renderComplaints
+  );
+
+}
+
+
+if (priorityFilter) {
+
+  priorityFilter.addEventListener(
+    "change",
+    renderComplaints
+  );
+
+}
+
+
+// ==========================================
 // Initial Application Render
 // ==========================================
 
@@ -1572,3 +1759,4 @@ renderStats();
 
 
 renderComplaints();
+  
