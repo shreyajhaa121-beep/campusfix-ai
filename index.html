@@ -1,51 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>CampusFix AI</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 </head>
+
 
 <body>
 
+
+  <!-- ========================================= -->
+  <!-- HEADER -->
+  <!-- ========================================= -->
+
   <header class="header">
+
     <div class="logo">
+
       <span>⚡</span>
-      <h1>CampusFix AI</h1>
+
+      <h1>
+        CampusFix AI
+      </h1>
+
     </div>
 
+
     <div class="header-text">
-      <span>Agent-Powered Campus Problem Resolution</span>
+
+      <span>
+        Agent-Powered Campus Problem Resolution
+      </span>
+
     </div>
+
   </header>
 
 
+  <!-- ========================================= -->
+  <!-- MAIN CONTENT -->
+  <!-- ========================================= -->
+
   <main class="container">
+
+
+    <!-- ========================================= -->
+    <!-- HERO SECTION -->
+    <!-- ========================================= -->
 
     <section class="hero">
 
       <div>
-        <span class="badge">WebMCP Powered</span>
+
+        <span class="badge">
+          WebMCP Powered
+        </span>
+
 
         <h2>
+
           Campus problems deserve
-          <span> smarter resolution.</span>
+
+          <span>
+            smarter resolution.
+          </span>
+
         </h2>
 
+
         <p>
+
           Students report problems. AI agents help humans identify,
           prioritize, and coordinate campus issue resolution.
+
         </p>
 
-        <div class="hero-buttons">
-          <button onclick="showReportForm()">Report a Problem</button>
 
-          <button class="secondary" onclick="showDashboard()">
-            Explore Dashboard
+        <div class="hero-buttons">
+
+          <button
+            type="button"
+            onclick="showReportForm()"
+          >
+
+            Report a Problem
+
           </button>
+
+
+          <button
+            type="button"
+            class="secondary"
+            onclick="showDashboard()"
+          >
+
+            Explore Dashboard
+
+          </button>
+
         </div>
 
       </div>
@@ -53,229 +119,430 @@
     </section>
 
 
-    <section id="dashboard" class="dashboard">
+    <!-- ========================================= -->
+    <!-- DASHBOARD -->
+    <!-- ========================================= -->
 
-      <h2>Campus Overview</h2>
+    <section
+      id="dashboard"
+      class="dashboard"
+    >
+
+      <h2>
+        Campus Overview
+      </h2>
+
 
       <div class="stats">
 
-        <div class="stat-card">
-          <h3 id="totalIssues">0</h3>
-          <p>Total Issues</p>
-        </div>
 
         <div class="stat-card">
-          <h3 id="pendingIssues">0</h3>
-          <p>Pending</p>
+
+          <h3 id="totalIssues">
+            0
+          </h3>
+
+          <p>
+            Total Issues
+          </p>
+
         </div>
 
-        <div class="stat-card">
-          <h3 id="progressIssues">0</h3>
-          <p>In Progress</p>
-        </div>
 
         <div class="stat-card">
-          <h3 id="overdueIssues">0</h3>
-          <p>Overdue</p>
+
+          <h3 id="pendingIssues">
+            0
+          </h3>
+
+          <p>
+            Pending
+          </p>
+
         </div>
+
+
+        <div class="stat-card">
+
+          <h3 id="progressIssues">
+            0
+          </h3>
+
+          <p>
+            In Progress
+          </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+          <h3 id="overdueIssues">
+            0
+          </h3>
+
+          <p>
+            Overdue
+          </p>
+
+        </div>
+
 
       </div>
 
     </section>
 
 
-    <section id="reportSection" class="report-section hidden">
+    <!-- ========================================= -->
+    <!-- REPORT COMPLAINT SECTION -->
+    <!-- ========================================= -->
 
-      <h2>Report a Problem</h2>
+    <section
+      id="reportSection"
+      class="report-section hidden"
+    >
+
+      <h2>
+        Report a Problem
+      </h2>
+
 
       <form id="complaintForm">
 
-        <label>Complaint Type</label>
+
+        <label>
+          Complaint Type
+        </label>
+
 
         <select id="complaintType">
-          <option value="Hostel">Hostel</option>
-          <option value="College">College</option>
+
+          <option value="Hostel">
+            Hostel
+          </option>
+
+          <option value="College">
+            College
+          </option>
+
         </select>
 
 
-        <label>Problem Title</label>
+        <label>
+          Problem Title
+        </label>
+
 
         <input
+
           type="text"
+
           id="title"
+
           placeholder="Example: Water supply not working"
+
           required
+
         >
 
 
-        <label>Category</label>
+        <label>
+          Category
+        </label>
+
 
         <select id="category">
 
+
           <option value="Water & Plumbing">
+
             Water & Plumbing
+
           </option>
+
 
           <option value="Electrical">
+
             Electrical
+
           </option>
+
 
           <option value="Wi-Fi & Internet">
+
             Wi-Fi & Internet
+
           </option>
+
 
           <option value="Cleaning & Washroom">
+
             Cleaning & Washroom
+
           </option>
+
 
           <option value="Security">
+
             Security
+
           </option>
 
+
           <option value="Other">
+
             Other
+
           </option>
+
 
         </select>
 
 
-        <label>Location</label>
+        <label>
+          Location
+        </label>
+
 
         <input
+
           type="text"
+
           id="location"
+
           placeholder="Example: Hostel Block B"
+
           required
+
         >
 
 
-        <label>Description</label>
+        <label>
+          Description
+        </label>
+
 
         <textarea
+
           id="description"
+
           placeholder="Describe the problem..."
+
           required
+
         ></textarea>
 
 
         <button type="submit">
+
           Submit Complaint
+
         </button>
+
 
       </form>
 
     </section>
 
-<section id="complaintsSection" class="complaints">
 
-  <h2>Recent Complaints</h2>
+    <!-- ========================================= -->
+    <!-- RECENT COMPLAINTS -->
+    <!-- ========================================= -->
 
-  <!-- Search and Filter Section -->
-
-  <div class="complaint-filters">
-
-    <input
-      type="text"
-      id="searchComplaints"
-      placeholder="🔍 Search complaints..."
+    <section
+      id="complaintsSection"
+      class="complaints"
     >
 
-    <select id="statusFilter">
 
-      <option value="All">
-        All Status
-      </option>
-
-      <option value="Pending">
-        Pending
-      </option>
-
-      <option value="In Progress">
-        In Progress
-      </option>
-
-      <option value="Resolved">
-        Resolved
-      </option>
-
-      <option value="Escalated">
-        Escalated
-      </option>
-
-    </select>
+      <h2>
+        Recent Complaints
+      </h2>
 
 
-    <select id="typeFilter">
+      <!-- ========================================= -->
+      <!-- SEARCH AND FILTERS -->
+      <!-- ========================================= -->
 
-      <option value="All">
-        All Types
-      </option>
-
-      <option value="Hostel">
-        Hostel
-      </option>
-
-      <option value="College">
-        College
-      </option>
-
-    </select>
+      <div class="complaint-filters">
 
 
-    <select id="priorityFilter">
+        <!-- SEARCH -->
 
-      <option value="All">
-        All Priority
-      </option>
+        <input
 
-      <option value="High">
-        High Priority
-      </option>
+          type="text"
 
-      <option value="Medium">
-        Medium Priority
-      </option>
+          id="searchComplaint"
 
-      <option value="Low">
-        Low Priority
-      </option>
+          placeholder="🔍 Search complaints..."
 
-    </select>
+        >
 
 
-    <button
-      type="button"
-      id="clearFilters"
-    >
-      Clear Filters
-    </button>
+        <!-- STATUS FILTER -->
 
-  </div>
+        <select id="statusFilter">
+
+          <option value="">
+            All Status
+          </option>
 
 
-  <!-- Complaint Cards -->
+          <option value="Pending">
+            Pending
+          </option>
 
-  <div id="complaintsList"></div>
 
-</section>
-    
-    
-    <section id="detailsSection" class="details-section hidden">
+          <option value="In Progress">
+            In Progress
+          </option>
 
-  <button class="back-button" onclick="closeDetails()">
-    ← Back to Complaints
-  </button>
 
-  <h2>Complaint Details</h2>
+          <option value="Resolved">
+            Resolved
+          </option>
 
-  <div id="complaintDetails"></div>
+
+          <option value="Escalated">
+            Escalated
+          </option>
+
+        </select>
+
+
+        <!-- TYPE FILTER -->
+
+        <select id="typeFilter">
+
+          <option value="">
+            All Types
+          </option>
+
+
+          <option value="Hostel">
+            Hostel
+          </option>
+
+
+          <option value="College">
+            College
+          </option>
+
+        </select>
+
+
+        <!-- PRIORITY FILTER -->
+
+        <select id="priorityFilter">
+
+          <option value="">
+            All Priority
+          </option>
+
+
+          <option value="High">
+            High Priority
+          </option>
+
+
+          <option value="Medium">
+            Medium Priority
+          </option>
+
+
+          <option value="Low">
+            Low Priority
+          </option>
+
+        </select>
+
+
+        <!-- CLEAR FILTERS -->
+
+        <button
+
+          type="button"
+
+          class="clear-filter"
+
+          onclick="clearFilters()"
+
+        >
+
+          Clear Filters
+
+        </button>
+
+
+      </div>
+
+
+      <!-- ========================================= -->
+      <!-- COMPLAINT CARDS -->
+      <!-- ========================================= -->
+
+      <div
+        id="complaintsList"
+      ></div>
+
 
     </section>
+
+
+    <!-- ========================================= -->
+    <!-- COMPLAINT DETAILS -->
+    <!-- ========================================= -->
+
+    <section
+
+      id="detailsSection"
+
+      class="details-section hidden"
+
+    >
+
+
+      <button
+
+        type="button"
+
+        class="back-button"
+
+        onclick="closeDetails()"
+
+      >
+
+        ← Back to Complaints
+
+      </button>
+
+
+      <h2>
+        Complaint Details
+      </h2>
+
+
+      <div
+        id="complaintDetails"
+      ></div>
+
+
+    </section>
+
 
   </main>
 
 
-  <script src="app.js"></script>
+  <!-- ========================================= -->
+  <!-- JAVASCRIPT -->
+  <!-- ========================================= -->
+
+  <script
+    src="app.js"
+  ></script>
+
 
 </body>
+
 </html>
