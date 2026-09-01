@@ -4,7 +4,6 @@
 
 const STORAGE_KEY = "campusFixComplaints";
 
-
 // ==========================================
 // Default Sample Complaints
 // ==========================================
