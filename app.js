@@ -2477,6 +2477,73 @@ if (priorityFilter) {
   );
 
 }
+// ==========================================
+// CLEAR ALL TEST COMPLAINTS
+// ==========================================
+
+function clearAllTestComplaints() {
+
+  const confirmed =
+    confirm(
+      "Are you sure you want to permanently delete all test complaints?"
+    );
+
+
+  if (!confirmed) {
+
+    return;
+
+  }
+
+
+  const secondConfirmation =
+    confirm(
+      "Final confirmation: Delete all complaints permanently?"
+    );
+
+
+  if (!secondConfirmation) {
+
+    return;
+
+  }
+
+
+  complaints = [];
+
+
+  saveComplaints();
+
+
+  renderStats();
+
+
+  renderComplaints();
+
+
+  renderAuthorityDashboard();
+
+
+  const detailsSection =
+    document.getElementById(
+      "detailsSection"
+    );
+
+
+  if (detailsSection) {
+
+    detailsSection.classList.add(
+      "hidden"
+    );
+
+  }
+
+
+  alert(
+    "All test complaints have been cleared successfully."
+  );
+
+}
 
 
 // ==========================================
@@ -2511,5 +2578,4 @@ setupAuthorityFilter();
 
 renderAuthorityDashboard();
 
-localStorage.removeItem("campusFixComplaints");
-location.reload();
+
