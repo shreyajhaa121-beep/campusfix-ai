@@ -1528,9 +1528,7 @@ function renderComplaints() {
 
 
             <span>
-              🔥
-              ${complaint.priority}
-              Priority
+              🔥 ${complaint.priority} Priority
             </span>
 
 
@@ -1543,10 +1541,11 @@ function renderComplaints() {
               ${complaint.status}
 
             </span>
-            
+
+
             ${getDeadlineLabel(
-  complaint
-)}
+              complaint
+            )}
 
           </div>
 
@@ -1586,7 +1585,8 @@ function getActionButtons(
   complaint
 ) {
 
-  let buttons = "";
+  let buttons =
+    "";
 
 
   if (
@@ -1598,12 +1598,7 @@ function getActionButtons(
 
       <button
         type="button"
-        onclick="
-          updateComplaintStatus(
-            '${complaint.id}',
-            'In Progress'
-          )
-        "
+        onclick="updateComplaintStatus('${complaint.id}', 'In Progress')"
       >
         Mark In Progress
       </button>
@@ -1611,12 +1606,7 @@ function getActionButtons(
 
       <button
         type="button"
-        onclick="
-          updateComplaintStatus(
-            '${complaint.id}',
-            'Resolved'
-          )
-        "
+        onclick="updateComplaintStatus('${complaint.id}', 'Resolved')"
       >
         Mark Resolved
       </button>
@@ -1635,12 +1625,7 @@ function getActionButtons(
 
       <button
         type="button"
-        onclick="
-          updateComplaintStatus(
-            '${complaint.id}',
-            'Resolved'
-          )
-        "
+        onclick="updateComplaintStatus('${complaint.id}', 'Resolved')"
       >
         Mark Resolved
       </button>
@@ -1659,12 +1644,7 @@ function getActionButtons(
 
       <button
         type="button"
-        onclick="
-          updateComplaintStatus(
-            '${complaint.id}',
-            'In Progress'
-          )
-        "
+        onclick="updateComplaintStatus('${complaint.id}', 'In Progress')"
       >
         Mark In Progress
       </button>
@@ -1672,12 +1652,7 @@ function getActionButtons(
 
       <button
         type="button"
-        onclick="
-          updateComplaintStatus(
-            '${complaint.id}',
-            'Resolved'
-          )
-        "
+        onclick="updateComplaintStatus('${complaint.id}', 'Resolved')"
       >
         Mark Resolved
       </button>
@@ -1714,7 +1689,9 @@ function getActionButtons(
 // Show Complaint Details
 // ==========================================
 
-function showComplaintDetails(id) {
+function showComplaintDetails(
+  id
+) {
 
   const complaint =
     complaints.find(
@@ -1760,8 +1737,11 @@ function showComplaintDetails(id) {
 
 
   if (
+
     !detailsSection ||
+
     !complaintDetails
+
   ) {
 
     return;
@@ -1820,7 +1800,6 @@ function showComplaintDetails(id) {
       class="complaint-detail-card"
     >
 
-
       <h2>
         ${complaint.title}
       </h2>
@@ -1835,76 +1814,122 @@ function showComplaintDetails(id) {
 
 
       <p>
-        <strong>Complaint ID:</strong>
+
+        <strong>
+          Complaint ID:
+        </strong>
+
         ${complaint.id}
+
       </p>
 
 
       <p>
-        <strong>Type:</strong>
+
+        <strong>
+          Type:
+        </strong>
+
         ${complaint.type}
+
       </p>
 
 
       <p>
-        <strong>Category:</strong>
+
+        <strong>
+          Category:
+        </strong>
+
         ${complaint.category}
+
       </p>
 
 
       <p>
-        <strong>Location:</strong>
+
+        <strong>
+          Location:
+        </strong>
+
         ${complaint.location}
+
       </p>
 
 
       <p>
-        <strong>Priority:</strong>
+
+        <strong>
+          Priority:
+        </strong>
+
         ${complaint.priority}
+
       </p>
 
 
       <p>
-        <strong>Authority:</strong>
+
+        <strong>
+          Authority:
+        </strong>
+
         ${complaint.authority}
+
       </p>
 
 
       <p>
-        <strong>Status:</strong>
+
+        <strong>
+          Status:
+        </strong>
+
         ${complaint.status}
+
       </p>
 
 
       <p>
-        <strong>Submitted:</strong>
+
+        <strong>
+          Submitted:
+        </strong>
+
         ${complaint.createdAt}
+
       </p>
-      
+
+
       <p>
-  <strong>
-    Resolution Deadline:
-  </strong>
 
-  ${formatDeadlineDate(
-    complaint
-  )}
-</p>
+        <strong>
+          Resolution Deadline:
+        </strong>
+
+        ${formatDeadlineDate(
+          complaint
+        )}
+
+      </p>
 
 
-<p>
-  <strong>
-    Time Remaining:
-  </strong>
+      <p>
 
-  ${getDeadlineLabel(
-    complaint
-  )}
-</p>
+        <strong>
+          Time Remaining:
+        </strong>
 
-${getEscalationInfo(
-  complaint
-)}
+        ${getDeadlineLabel(
+          complaint
+        )}
+
+      </p>
+
+
+      ${getEscalationInfo(
+        complaint
+      )}
 
 
       <hr>
@@ -1917,7 +1942,8 @@ ${getEscalationInfo(
 
       ${
 
-        complaint.status !== "Resolved"
+        complaint.status !==
+        "Resolved"
 
           ? `
 
@@ -1957,7 +1983,6 @@ ${getEscalationInfo(
         ${historyHTML}
 
       </div>
-
 
     </div>
 
@@ -2015,6 +2040,7 @@ function updateComplaintStatus(
       "."
     );
 
+
     return;
 
   }
@@ -2029,6 +2055,7 @@ function updateComplaintStatus(
       "This complaint has already been resolved."
     );
 
+
     return;
 
   }
@@ -2040,23 +2067,20 @@ function updateComplaintStatus(
     );
 
 
-  let note = "";
+  let note =
+    "";
 
 
   if (
 
     actionNoteElement &&
 
-    actionNoteElement
-      .value
-      .trim()
+    actionNoteElement.value.trim()
 
   ) {
 
     note =
-      actionNoteElement
-        .value
-        .trim();
+      actionNoteElement.value.trim();
 
   }
 
@@ -2110,10 +2134,10 @@ function updateComplaintStatus(
     !lastHistoryItem ||
 
     lastHistoryItem.status !==
-      newStatus ||
+    newStatus ||
 
     lastHistoryItem.note !==
-      note
+    note
 
   ) {
 
@@ -2143,7 +2167,8 @@ function updateComplaintStatus(
 
 
   renderComplaints();
-  
+
+
   renderAuthorityDashboard();
 
 
@@ -2284,7 +2309,6 @@ if (complaintForm) {
           "Pending",
 
         priority:
-
           calculatePriority(
             category,
             description
@@ -2299,7 +2323,9 @@ if (complaintForm) {
 
             .toISOString()
 
-            .split("T")[0],
+            .split(
+              "T"
+            )[0],
 
 
         history: [
@@ -2336,7 +2362,8 @@ if (complaintForm) {
 
 
       renderComplaints();
-      
+
+
       renderAuthorityDashboard();
 
 
@@ -2492,6 +2519,7 @@ complaints =
           complaint.history
         );
 
+
       return complaint;
 
     }
@@ -2509,6 +2537,8 @@ renderStats();
 
 renderComplaints();
 
+
 setupAuthorityFilter();
+
 
 renderAuthorityDashboard();
