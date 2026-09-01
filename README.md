@@ -54,6 +54,10 @@ If a college complaint is not resolved within 7 days, it is escalated to the Col
 
 CampusFix AI aims to improve communication between students and campus authorities by providing a centralized platform for reporting, tracking, and managing campus issues.
 
+## 🌐 Live Demo
+
+Visit CampusFix AI: [Open Live Website]
+
 ## 👩‍💻 Developer
 
 **Shreya Kumari**
