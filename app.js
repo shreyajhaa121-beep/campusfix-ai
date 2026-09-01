@@ -2510,3 +2510,6 @@ setupAuthorityFilter();
 
 
 renderAuthorityDashboard();
+
+localStorage.removeItem("campusFixComplaints");
+location.reload();
