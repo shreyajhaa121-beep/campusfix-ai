@@ -185,59 +185,33 @@ function cleanHistory(history) {
 // ==========================================
 
 function loadComplaints() {
-
   try {
-
-    const saved =
-      localStorage.getItem(
-        STORAGE_KEY
-      );
-
+    const saved = localStorage.getItem(STORAGE_KEY);
 
     if (saved) {
-
-      const data =
-        JSON.parse(saved);
-
+      const data = JSON.parse(saved);
 
       if (Array.isArray(data)) {
+        return data.map((complaint) => {
+          complaint.history = cleanHistory(
+            complaint.history
+          );
 
-        return data.map(
-          complaint => {
-
-            complaint.history =
-              cleanHistory(
-                complaint.history
-              );
-
-
-            return complaint;
-
-          }
-        );
-
+          return complaint;
+        });
       }
-
     }
-
   } catch (error) {
-
     console.error(
       "Unable to load complaints:",
       error
     );
-
   }
 
-
   return JSON.parse(
-    JSON.stringify(
-      defaultComplaints
-    )
+    JSON.stringify(defaultComplaints)
   );
-
 }
-
 
 let complaints =
   loadComplaints();
