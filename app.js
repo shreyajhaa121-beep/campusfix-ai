@@ -2484,23 +2484,18 @@ if (priorityFilter) {
 // Initial Application Render
 // ==========================================
 
-complaints =
-  complaints.map(
-    complaint => {
+complaints = complaints.map(
+  complaint => {
 
-      complaint.history =
-        cleanHistory(
-          complaint.history
-        );
+    complaint.history =
+      cleanHistory(
+        complaint.history
+      );
 
+    return complaint;
 
-      return complaint;
-
-    }
-  );
-
-
-checkAutomaticEscalation();
+  }
+);
 
 
 saveComplaints();
