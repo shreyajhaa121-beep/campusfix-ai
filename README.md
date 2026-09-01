@@ -56,7 +56,7 @@ CampusFix AI aims to improve communication between students and campus authoriti
 
 ## 🌐 Live Demo
 
-Visit CampusFix AI: [Open Live Website]
+Visit CampusFix AI: [Open Live Website](https://shreyajhaa121-beep.github.io/campusfix-ai/)
 
 ## 👩‍💻 Developer
 
